@@ -6,20 +6,22 @@
   html {
     scroll-behavior: smooth;
   }
-  
+
   html, body {
     overflow-x: hidden;
   }
 
   body {
-    @apply text-gray-900 antialiased;
-    background: linear-gradient(
-      135deg,
-      rgba(99, 102, 241, 0.05) 0%,
-      rgba(168, 85, 247, 0.05) 50%,
-      rgba(236, 72, 153, 0.05) 100%
-    );
-    background-attachment: fixed;
+    font-family: "DM Sans", system-ui, sans-serif;
+    @apply text-[#EDE9FF] antialiased bg-[#161229];
+  }
+
+  html:not(.dark) body {
+    @apply text-[#18181B] bg-[#F5F5F8];
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
   }
 }
 
@@ -28,111 +30,41 @@
     @apply max-w-7xl mx-auto;
   }
 
-  .chaos-grid {
-    background-image: linear-gradient(to right, rgba(99, 102, 241, 0.1) 1px, transparent 1px),
-                      linear-gradient(to bottom, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
-    background-size: 50px 50px;
-    mask-image: radial-gradient(circle at center, black, transparent 80%);
+  /* Section eyebrow label */
+  .label {
+    font-family: "DM Sans", system-ui, sans-serif;
+    @apply text-xs font-medium uppercase tracking-[0.18em] text-[#71717A];
   }
 
-  .chaos-grid-dark {
-    background-image: linear-gradient(to right, rgba(99, 102, 241, 0.2) 1px, transparent 1px),
-                      linear-gradient(to bottom, rgba(99, 102, 241, 0.2) 1px, transparent 1px);
-  }
-
-  .glass-card {
-    @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-  }
-
-  .text-glow {
-    text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-  }
-
-  .hover-glow {
-    @apply transition-all duration-300;
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-  }
-
-  .gradient-border {
-    position: relative;
-    border: double 1px transparent;
-    background-image: linear-gradient(white, white), 
-                     linear-gradient(to right, #6366f1, #a855f7);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-  }
-
-  .gradient-border-dark {
-    background-image: linear-gradient(#1f2937, #1f2937), 
-                     linear-gradient(to right, #6366f1, #a855f7);
+  /* Flat bordered card */
+  .card {
+    @apply border border-[#252333] dark:border-[#252333] bg-[#100E1C] dark:bg-[#100E1C];
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
+/* Subtle noise grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
 }
 
-@keyframes width {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+/* Marquee animation for tech strip */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+.animate-marquee {
+  animation: marquee 28s linear infinite;
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-  }
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-gradient {
-  background-size: 200% auto;
-  animation: gradient 8s linear infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
-
-.animate-rotate {
-  animation: rotate 8s linear infinite;
+.animate-marquee:hover {
+  animation-play-state: paused;
 }

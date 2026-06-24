@@ -1,72 +1,125 @@
 import { useState, useEffect } from "react";
 import {
-  Laptop,
-  ChevronDown,
   ExternalLink,
   Github,
-  Rocket,
-  Palette,
-  Globe,
+  ArrowRight,
   Sun,
   Moon,
-  GraduationCap,
-  Coffee,
-  Heart,
   Linkedin,
   X,
+  Menu,
 } from "lucide-react";
 import { useTheme } from "./ThemeContext";
 import ContactForm from "./ContactForm";
 import { motion } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
 
-function App() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("accueil");
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHoveringHero, setIsHoveringHero] = useState(false);
-  const { isDark, toggleTheme } = useTheme();
-  const [showPopup, setShowPopup] = useState(true);
+// ─── Color tokens ────────────────────────────────────────────────────────
+const C = {
+  accent:       "#7635D5",
+  accentLight:  "#9B6CE9",
+  bgDark:       "#111113",   // neutral charcoal — no purple tint
+  surfaceDark:  "#1A1A1E",
+  bgLight:      "#F5F5F8",   // cool near-white
+  surfaceLight: "#FFFFFF",
+  textDark:     "#EEEDF5",
+  textLight:    "#18181B",
+  mutedDark:    "#8F8F9E",
+  mutedLight:   "#5E5C7A",
+  borderDark:   "#2E2E38",
+  borderLight:  "#DDDBE8",
+} as const;
+
+const TECH_TAGS = [
+  "React", "TypeScript", "Tailwind CSS", "Vite", "Node.js",
+  "Next.js", "Framer Motion", "Vercel", "JavaScript", "HTML", "CSS",
+  "React", "TypeScript", "Tailwind CSS", "Vite", "Node.js",
+  "Next.js", "Framer Motion", "Vercel", "JavaScript", "HTML", "CSS",
+];
+
+const PRICING = [
+  {
+    num: "01",
+    name: "Site Vitrine",
+    desc: "Un site professionnel pour présenter votre entreprise au monde.",
+    features: ["Design unique", "Responsive mobile", "Formulaire de contact", "Hébergement assisté"],
+    price: "À partir de 400 $",
+    delay: "2–3 semaines",
+    badge: null,
+  },
+  {
+    num: "02",
+    name: "Site Sur Mesure",
+    desc: "Application React complète avec animations et fonctionnalités avancées.",
+    features: ["React + TypeScript", "Animations Framer Motion", "Architecture optimisée", "SEO intégré"],
+    price: "À partir de 900 $",
+    delay: "4–8 semaines",
+    badge: null,
+  },
+  {
+    num: "03",
+    name: "Site Transactionnel",
+    desc: "Boutique en ligne, réservations ou paiements intégrés directement à votre site.",
+    features: ["Intégration Stripe", "Gestion produits/commandes", "Interface admin", "Formation incluse"],
+    price: "À partir de 1 800 $",
+    delay: "Sur devis",
+    badge: "Nouveau",
+  },
+];
+
+function TechMarquee({ isDark }: { isDark: boolean }) {
+  const border = isDark ? C.borderDark : C.borderLight;
+  const muted  = isDark ? C.mutedDark  : C.mutedLight;
+  return (
+    <div
+      className="overflow-hidden py-4"
+      style={{ borderTop: `1px solid ${border}`, borderBottom: `1px solid ${border}` }}
+    >
+      <div className="flex whitespace-nowrap animate-marquee">
+        {TECH_TAGS.map((tag, i) => (
+          <span
+            key={i}
+            className="inline-flex items-center gap-4 px-6 text-xs font-mono uppercase tracking-widest select-none"
+            style={{ color: muted }}
+          >
+            {tag}
+            <span style={{ color: C.accent }} aria-hidden>·</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const [isScrolled, setIsScrolled]         = useState(false);
+  const [activeSection, setActiveSection]   = useState("accueil");
+  const { isDark, toggleTheme }             = useTheme();
+  const [showPopup, setShowPopup]           = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-
-      const sections = ["accueil", "apropos", "services", "projets", "contact"];
-      const current = sections.find((section) => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
-        }
-        return false;
+      const sections = ["accueil", "apropos", "services", "projets", "tarifs", "contact"];
+      const current = sections.find((id) => {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        const { top, bottom } = el.getBoundingClientRect();
+        return top <= 100 && bottom >= 100;
       });
       if (current) setActiveSection(current);
     };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isHoveringHero) {
-        setMousePosition({
-          x: (e.clientX - window.innerWidth / 2) * 0.05,
-          y: (e.clientY - window.innerHeight / 2) * 0.05,
-        });
-      }
-    };
-
     window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [isHoveringHero]);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const projects = [
     {
       title: "Club IA Université Laval",
       description: "Site pour un club étudiant en intelligence artificielle",
       image: "/cia_presentation.png",
-      alt: "Site web pour club Intelligence Artificielle de mon univsersité",
+      alt: "Site web pour club Intelligence Artificielle de mon université",
       tech: ["TypeScript", "Tailwind CSS"],
       link: "https://cia.ift.ulaval.ca",
     },
@@ -75,14 +128,14 @@ function App() {
       description: "Mon site portfolio si vous voulez en savoir plus sur moi!",
       image: "portfolio_presentation.png",
       alt: "Site web portfolio personnel",
-      tech: ["Typescript", "JavaScript", "CSS", "HTML"],
+      tech: ["TypeScript", "JavaScript", "CSS", "HTML"],
       link: "https://www.dereckbelanger.me",
     },
     {
       title: "Lavage à pression provincial",
       description: "Compagnie québecoise de service de lavage à pression",
       image: "lavagepression.png",
-      alt: "Site web pour un magasin de kebab fictif",
+      alt: "Site web pour lavage à pression provincial",
       tech: ["TypeScript", "JavaScript", "CSS", "HTML"],
       link: "https://www.lavageapressionprovincial.com",
     },
@@ -102,448 +155,697 @@ function App() {
       tech: ["TypeScript", "JavaScript", "CSS"],
       link: "https://garage-website-alpha.vercel.app",
     },
-    {
-      title: "Et bien d'autres à venir!",
-      description:
-        "Vous pourriez être le prochain projet sur cette liste! Qu'est-ce que vous attendez?",
-      image: "autre.jpg",
-      tech: [],
-      link: () => scrollToSection("contact"),
-    },
   ];
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    element?.scrollIntoView({ behavior: "smooth" });
+  const navLinks: [string, string][] = [
+    ["accueil",  "Accueil"],
+    ["apropos",  "À Propos"],
+    ["services", "Services"],
+    ["projets",  "Projets"],
+    ["tarifs",   "Tarifs"],
+    ["contact",  "Contact"],
+  ];
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMobileMenuOpen(false);
   };
+
+  const bg     = isDark ? C.bgDark     : C.bgLight;
+  const text   = isDark ? C.textDark   : C.textLight;
+  const muted  = isDark ? C.mutedDark  : C.mutedLight;
+  const border = isDark ? C.borderDark : C.borderLight;
+  const surf   = isDark ? C.surfaceDark : C.surfaceLight;
+
   return (
-    <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 dark:text-white transition-colors duration-300">
-      {/* Popup */}
+    <div
+      className="min-h-screen overflow-x-hidden font-body transition-colors duration-300"
+      style={{ background: bg, color: text }}
+    >
+      <Analytics />
+
+      {/* ── ANNOUNCEMENT BAR ─────────────────────────────────────── */}
       {showPopup && (
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 50 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="fixed top-12 right-4 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-white rounded-md shadow-lg p-4 flex flex-col items-start space-y-2 z-[1000] max-w-xs"
+          initial={{ opacity: 0, y: -40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="fixed top-0 left-0 right-0 z-[100] h-9 flex items-center justify-between px-4 sm:px-6"
+          style={{ background: C.accent }}
         >
-          <p className="text-sm sm:text-base">
-            Nouveauté! Je vous aide maintenant à créer votre propre site web
-            transactionnel. Contactez-moi pour plus d'informations les premiers
-            clients auront un tarif réduit pour célébrer!
+          <p className="text-white text-xs sm:text-sm font-medium truncate pr-4">
+            Nouveauté! Sites transactionnels disponibles — tarif réduit pour les premiers clients.{" "}
+            <button
+              onClick={() => scrollToSection("tarifs")}
+              className="underline underline-offset-2 hover:opacity-80"
+            >
+              Voir les tarifs →
+            </button>
           </p>
           <button
             onClick={() => setShowPopup(false)}
-            className="self-end p-1 rounded-full hover:bg-white/20 transition-colors"
-            aria-label="Close popup"
+            className="flex-shrink-0 text-white/80 hover:text-white transition-opacity ml-4"
+            aria-label="Fermer"
           >
             <X className="h-4 w-4" />
           </button>
         </motion.div>
       )}
-      <Analytics />
-      {/* Navigation */}
+
+      {/* ── NAVIGATION ───────────────────────────────────────────── */}
       <nav
-        className={`fixed w-full z-50 transition-all duration-500 ${
-          isScrolled
-            ? "glass-card shadow-lg py-4"
-            : "bg-transparent py-4 sm:py-6"
-        }`}
+        className="fixed left-0 right-0 z-50 transition-all duration-300 py-4"
+        style={{
+          top: showPopup ? "2.25rem" : "0",
+          background: isScrolled ? `${bg}F2` : "transparent",
+          backdropFilter: isScrolled ? "blur(12px)" : "none",
+          borderBottom: isScrolled ? `1px solid ${border}` : "none",
+        }}
       >
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="container mx-auto px-4 sm:px-6 flex items-center justify-between"
+          className="container mx-auto px-6 flex items-center justify-between"
         >
-          <div className="flex items-center space-x-2 group">
-            <img
-              src="evoweb_logo.png"
-              alt="Logo de ma compagnie de développement web Evoweb"
-              className="h-24 w-24 text-indigo-600 dark:text-indigo-400 animate-rotate"
-            />
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 text-transparent bg-clip-text animate-gradient">
+          <button onClick={() => scrollToSection("accueil")} className="flex items-center gap-3">
+            <img src="evoweb_logo.png" alt="Evoweb" className="h-10 w-10 object-contain" />
+            <span className="font-display font-bold text-xl" style={{ color: text }}>
               Evoweb
             </span>
-          </div>
-          <div className="flex items-center space-x-8">
-            <div className="hidden md:flex space-x-8">
-              {[
-                ["accueil", "Accueil"],
-                ["apropos", "À Propos"],
-                ["services", "Services"],
-                ["projets", "Projets"],
-                ["contact", "Contact"],
-              ].map(([id, label]) => (
+          </button>
+
+          <div className="flex items-center gap-5">
+            <div className="hidden md:flex gap-6">
+              {navLinks.map(([id, label]) => (
                 <button
                   key={id}
                   onClick={() => scrollToSection(id)}
-                  className={`relative px-4 py-2 ${
-                    activeSection === id
-                      ? "text-indigo-600 dark:text-indigo-400 text-glow"
-                      : "text-gray-600 dark:text-gray-300"
-                  } hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+                  className="text-sm relative transition-colors"
+                  style={{ color: activeSection === id ? C.accentLight : muted }}
                 >
                   {label}
                   {activeSection === id && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 transform origin-left animate-[width_0.3s_ease-out]" />
+                    <span
+                      className="absolute -bottom-1 left-0 right-0 h-px"
+                      style={{ background: C.accent }}
+                    />
                   )}
                 </button>
               ))}
             </div>
+
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg glass-card hover-glow"
-              aria-label="Toggle theme"
+              className="p-2 transition-colors"
+              style={{ border: `1px solid ${border}` }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.accentLight)}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = border)}
+              aria-label="Changer de thème"
             >
-              {isDark ? (
-                <Sun className="h-5 w-5 text-yellow-500" />
-              ) : (
-                <Moon className="h-5 w-5 text-gray-600" />
-              )}
+              {isDark
+                ? <Sun  className="h-4 w-4" style={{ color: muted }} />
+                : <Moon className="h-4 w-4" style={{ color: muted }} />}
+            </button>
+
+            <button
+              className="md:hidden p-2 transition-colors"
+              style={{ border: `1px solid ${border}` }}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Menu"
+            >
+              <Menu className="h-4 w-4" style={{ color: muted }} />
             </button>
           </div>
         </motion.div>
+
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden px-6 py-4 flex flex-col gap-4"
+            style={{ background: surf, borderTop: `1px solid ${border}` }}
+          >
+            {navLinks.map(([id, label]) => (
+              <button
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className="text-sm text-left"
+                style={{ color: activeSection === id ? C.accentLight : muted }}
+              >
+                {label}
+              </button>
+            ))}
+          </motion.div>
+        )}
       </nav>
 
-      {/* Hero Section */}
+      {/* ── HERO ──────────────────────────────────────────────────── */}
       <section
         id="accueil"
-        className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 sm:px-6"
-        onMouseEnter={() => setIsHoveringHero(true)}
-        onMouseLeave={() => setIsHoveringHero(false)}
+        className="min-h-screen flex flex-col justify-center px-6 relative pt-36 pb-16"
       >
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute inset-0 chaos-grid dark:chaos-grid-dark opacity-70"
-          style={{
-            transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
-            transition: "transform 0.1s ease-out",
-          }}
-        />
-        <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-32 relative">
+        <div className="container mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto text-center"
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 text-transparent bg-clip-text animate-gradient text-glow">
-              Une idée en tête ? Créez votre site web personnalisé avec Evoweb
+            <span className="label mb-5 block">Une idée en tête ?</span>
+            <h1
+              className="font-display font-extrabold leading-[0.9] tracking-tight mb-8"
+              style={{ fontSize: "clamp(3rem, 10vw, 9rem)", color: text }}
+            >
+              Créez votre
+              <br />
+              site web
+              <br />
+              <span style={{ color: C.accentLight }}>personnalisé</span>
+              <br />
+              avec Evoweb.
             </h1>
-
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 sm:mb-12 max-w-2xl mx-auto text-justify">
-              Je transforme vos idées en sites web modernes et 100%
-              personnalisés vous permettant de vous démarquer de la concurrence.
+            <p className="text-lg max-w-lg mb-10 leading-relaxed" style={{ color: muted }}>
+              Je transforme vos idées en sites web modernes et 100% personnalisés
+              vous permettant de vous démarquer de la concurrence.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => scrollToSection("projets")}
-                className="group glass-card text-indigo-600 dark:text-indigo-400 px-8 py-3 rounded-lg hover-glow animate-pulse-glow"
+                className="font-semibold px-8 py-3 text-sm uppercase tracking-wider transition-opacity hover:opacity-85 inline-flex items-center justify-center gap-2 group"
+                style={{ background: C.accent, color: "#FFFFFF" }}
               >
-                <span className="flex items-center justify-center">
-                  Voir Mes Projets
-                  <Rocket className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
+                Voir mes projets
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
-                className="group gradient-border dark:gradient-border-dark rounded-lg px-8 py-3 hover-glow"
+                className="px-8 py-3 text-sm uppercase tracking-wider transition-colors inline-flex items-center justify-center gap-2 group"
+                style={{ border: `1px solid ${border}`, color: text }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.accentLight)}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = border)}
               >
-                <span className="flex items-center justify-center">
-                  Me Contacter
-                  <ExternalLink className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
+                Me contacter
+                <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </motion.div>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <ChevronDown
-            className="h-8 w-8 text-indigo-400 animate-bounce cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
-            onClick={() => scrollToSection("apropos")}
-          />
-        </div>
+        <button
+          onClick={() => scrollToSection("apropos")}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-lg transition-colors"
+          style={{ color: muted }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = C.accentLight)}
+          onMouseLeave={(e) => (e.currentTarget.style.color = muted)}
+          aria-label="Défiler vers le bas"
+        >
+          ↓
+        </button>
       </section>
 
-      {/* À Propos Section */}
+      {/* ── TECH MARQUEE ─────────────────────────────────────────── */}
+      <TechMarquee isDark={isDark} />
+
+      {/* ── À PROPOS ──────────────────────────────────────────────── */}
       <section
         id="apropos"
-        className="relative py-16 sm:py-32 overflow-hidden px-4 sm:px-6"
+        className="py-24 sm:py-32 px-6"
+        style={{ borderTop: `1px solid ${border}` }}
       >
-        <div className="absolute inset-0 chaos-grid dark:chaos-grid-dark opacity-20 rotate-45" />
-        <div className="container mx-auto relative">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center gap-8 sm:gap-12">
-              <div className="w-full md:w-1/2 mb-6 md:mb-0 md:pr-8">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
-                  <img
-                    src="profil.png"
-                    alt="Photo de profil de Dereck Bélanger le fondateur de Evoweb"
-                    className="relative rounded-2xl transform group-hover:scale-[1.02] transition-transform duration-500"
-                  />
-                </div>
-              </div>
-              <div className="w-full md:w-1/2 space-y-4 sm:space-y-6">
-                <div className="flex items-center space-x-3">
-                  <GraduationCap className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                  <h3 className="text-2xl font-semibold text-glow">
-                    Fondateur d'Evoweb
-                  </h3>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300 text-justify">
-                  Bonjour! Je suis Dereck, étudiant en informatique à
-                  l'Université Laval et développeur web passionné. Je combine
-                  créativité et expertise technique pour créer des expériences
-                  web qui satisfont vos besoins. C'est moi s'occuperai de vous!
-                </p>
-                <div className="flex items-center space-x-3">
-                  <Coffee className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                  <p className="text-gray-600 dark:text-gray-300 text-justify">
-                    Amateur de nouveaux défis et d'apprentissage continu
-                  </p>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Heart className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                  <p className="text-gray-600 dark:text-gray-300 text-justify">
-                    Spécialisé dans le développement React et Tailwind CSS
-                  </p>
-                </div>
+        <div className="container mx-auto">
+          <span className="label mb-12 block">— À Propos</span>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="flex flex-col md:flex-row items-start gap-12 mt-12"
+          >
+            <div className="w-full md:w-5/12 flex-shrink-0">
+              <div className="overflow-hidden" style={{ border: `1px solid ${border}` }}>
+                <img
+                  src="profil.png"
+                  alt="Dereck Bélanger — Fondateur Evoweb"
+                  className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                />
               </div>
             </div>
-          </div>
+
+            <div className="w-full md:w-7/12 space-y-6 md:pt-4">
+              <h2
+                className="font-display font-bold text-3xl sm:text-4xl leading-tight"
+                style={{ color: text }}
+              >
+                Fondateur d'Evoweb
+              </h2>
+              <p className="leading-relaxed" style={{ color: muted }}>
+                Bonjour! Je suis Dereck, étudiant en informatique à l'Université Laval
+                et développeur web passionné. Je combine créativité et expertise technique
+                pour créer des expériences web qui satisfont vos besoins.
+                C'est moi s'occuperai de vous!
+              </p>
+              <div className="space-y-3 pt-2">
+                {[
+                  "React · TypeScript · Tailwind CSS · Framer Motion",
+                  "Informatique, Université Laval",
+                  "Passionné par les défis et l'apprentissage continu",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-3 text-sm" style={{ color: muted }}>
+                    <span style={{ color: C.accentLight }}>—</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="relative py-16 sm:py-32 px-4 sm:px-6">
-        <div className="absolute inset-0 chaos-grid dark:chaos-grid-dark opacity-20 -rotate-45" />
-        <div className="container mx-auto relative">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-transparent bg-clip-text text-glow">
-            Mes Services
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      {/* ── DIFFERENTIATORS STRIP ────────────────────────────────── */}
+      <div className="px-6" style={{ borderTop: `1px solid ${border}` }}>
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px" style={{ background: border }}>
             {[
-              {
-                icon: <Laptop className="h-8 w-8" />,
-                title: "Développement Web",
-                description:
-                  "Je créer des sites web personnalisés avec des technologies modernes et performantes",
-              },
-              {
-                icon: <Globe className="h-8 w-8" />,
-                title: "Maintien et entretien",
-                description:
-                  "Une fois votre site en ligne, je peux m'occuper de son maintien et de ses mises à jour",
-              },
-              {
-                icon: <Palette className="h-8 w-8" />,
-                title: "Consulation UI/UX",
-                description:
-                  "Besoin de conseils avant de lancer votre site ? Je vous aide à comprendre l'expérience utilisateur optimale pour vos besoins",
-              },
-            ].map((service, index) => (
-              <div
-                key={index}
-                className="group glass-card rounded-xl p-8 hover-glow transform hover:-translate-y-2 transition-all duration-500"
-              >
-                <div className="text-indigo-600 dark:text-indigo-400 mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                  {service.icon}
+              { stat: "5+",   label: "Projets livrés" },
+              { stat: "100%", label: "Entièrement sur mesure" },
+              { stat: "1:1",  label: "Contact direct avec votre dev" },
+            ].map(({ stat, label }) => (
+              <div key={stat} className="py-10 px-8" style={{ background: bg }}>
+                <div
+                  className="font-display font-extrabold text-4xl sm:text-5xl mb-2 leading-none"
+                  style={{ color: C.accentLight }}
+                >
+                  {stat}
                 </div>
-                <h3 className="text-xl font-semibold mb-4">{service.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-justify">
-                  {service.description}
-                </p>
+                <div className="text-sm" style={{ color: muted }}>{label}</div>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      <section id="projets" className="relative py-16 sm:py-32 px-4 sm:px-6">
-        <div className="absolute inset-0 chaos-grid dark:chaos-grid-dark opacity-20" />
-        <div className="container mx-auto relative">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-transparent bg-clip-text text-glow">
-            Quelques-uns de mes projets
-          </h2>
-          <div className="flex flex-col gap-16 sm:gap-24 max-w-6xl mx-auto">
-            {projects.slice(0, projects.length - 1).map((project, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className={`flex flex-col ${
-                  index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                }`}
-              >
-                <div className="w-full md:w-1/2 mb-6 md:mb-0 md:pr-8">
-                  <div className="relative group aspect-video">
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
-                    <div className="relative glass-card rounded-xl overflow-hidden hover-glow h-full">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/2 space-y-4 md:space-y-6 text-center md:text-left">
-                  <h3 className="text-xl md:text-2xl font-semibold text-glow">
-                    {project.title}
+      {/* ── SERVICES ──────────────────────────────────────────────── */}
+      <section
+        id="services"
+        className="py-24 sm:py-32 px-6"
+        style={{ borderTop: `1px solid ${border}` }}
+      >
+        <div className="container mx-auto">
+          <span className="label mb-12 block">— Services</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-12"
+          >
+            <h2
+              className="font-display font-bold text-3xl sm:text-4xl mb-16"
+              style={{ color: text }}
+            >
+              Mes Services
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px" style={{ background: border }}>
+              {[
+                {
+                  title: "Développement Web",
+                  desc: "Sites web personnalisés construits avec des technologies modernes et performantes, du premier pixel à la mise en ligne.",
+                },
+                {
+                  title: "Maintien et entretien",
+                  desc: "Votre site en ligne, c'est un actif. Je m'occupe des mises à jour, correctifs et évolutions pour qu'il reste impeccable.",
+                },
+                {
+                  title: "Consultation UI/UX",
+                  desc: "Besoin de conseils avant de lancer ? Je vous guide vers une expérience utilisateur optimale pour vos visiteurs.",
+                },
+              ].map((service, i) => (
+                <div
+                  key={i}
+                  className="p-8 sm:p-10 group transition-colors duration-300"
+                  style={{ background: bg }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = surf)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = bg)}
+                >
+                  <h3 className="font-display font-semibold text-lg mb-4" style={{ color: text }}>
+                    {service.title}
                   </h3>
-                  <p className="text-base md:text-base text-gray-600 dark:text-gray-300 text-justify">
-                    {project.description}
+                  <p className="text-sm leading-relaxed" style={{ color: muted }}>
+                    {service.desc}
                   </p>
-                  <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                    {project.tech.map((tech, i) => (
-                      <span
-                        key={i}
-                        className="px-2 py-1 md:px-3 md:py-1 glass-card text-indigo-600 dark:text-indigo-400 rounded-full text-xs md:text-sm hover-glow"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                  <a
-                    href={
-                      typeof project.link === "string"
-                        ? project.link
-                        : undefined
-                    }
-                    onClick={
-                      typeof project.link === "function"
-                        ? project.link
-                        : undefined
-                    }
-                    className="inline-flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group"
-                  >
-                    Voir le Projet
-                    <ExternalLink className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
-                  </a>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="dernier-projet" className="relative py-32">
-        <div className="absolute inset-0 chaos-grid dark:chaos-grid-dark opacity-20" />
-        <div className="container mx-auto px-6 relative">
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="w-full md:w-1/2 mb-6 md:mb-0 md:pr-8">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
-                <div className="relative glass-card rounded-xl overflow-hidden hover-glow">
-                  <img
-                    src={projects[projects.length - 1].image}
-                    alt={projects[projects.length - 1].title}
-                    className="w-full h-auto object-contain transform group-hover:scale-110 transition-transform duration-700"
+                  <div
+                    className="mt-8 h-px w-0 group-hover:w-full transition-all duration-500"
+                    style={{ background: C.accent }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-              </div>
+              ))}
             </div>
-            <div className="w-full md:w-1/2 space-y-6">
-              <h3 className="text-2xl font-semibold text-glow">
-                {projects[projects.length - 1].title}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 text-justify">
-                {projects[projects.length - 1].description}
+
+            <div
+              className="mt-px flex items-center justify-between px-8 py-5"
+              style={{ background: surf, borderTop: `1px solid ${border}` }}
+            >
+              <p className="text-sm" style={{ color: muted }}>
+                Vous avez un projet en tête ?
               </p>
               <button
                 onClick={() => scrollToSection("contact")}
-                className="group glass-card text-indigo-600 dark:text-indigo-400 px-8 py-3 rounded-lg hover-glow"
+                className="inline-flex items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-70"
+                style={{ color: C.accentLight }}
               >
-                <span className="flex items-center justify-center">
-                  Allons-y
-                  <Rocket className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
+                Parlons-en
+                <ExternalLink className="h-4 w-4" />
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="relative py-16 sm:py-32 px-4 sm:px-6">
-        <div className="absolute inset-0 chaos-grid dark:chaos-grid-dark opacity-20" />
-        <div className="container mx-auto relative">
-          <div className="max-w-4xl mx-auto glass-card rounded-2xl p-8 sm:p-12 hover-glow">
-            <div className="flex flex-col md:flex-row gap-8 sm:gap-12">
-              <div className="w-full md:w-1/2 space-y-6 sm:space-y-8">
-                <h2 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-transparent bg-clip-text text-glow">
+      {/* ── PROJETS ───────────────────────────────────────────────── */}
+      <section
+        id="projets"
+        className="py-24 sm:py-32 px-6"
+        style={{ borderTop: `1px solid ${border}` }}
+      >
+        <div className="container mx-auto">
+          <span className="label mb-12 block">— Projets</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-12"
+          >
+            <h2
+              className="font-display font-bold text-3xl sm:text-4xl mb-16"
+              style={{ color: text }}
+            >
+              Quelques-uns de mes projets
+            </h2>
+
+            <div className="flex flex-col gap-20 max-w-5xl">
+              {projects.map((project, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className={`flex flex-col ${
+                    index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                  } gap-8 md:gap-16 items-center`}
+                >
+                  <div className="w-full md:w-1/2 flex-shrink-0">
+                    <div
+                      className="overflow-hidden aspect-video group"
+                      style={{ border: `1px solid ${border}` }}
+                    >
+                      <img
+                        src={project.image}
+                        alt={project.alt}
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="w-full md:w-1/2 space-y-4">
+                    <span
+                      className="font-mono text-xs uppercase tracking-wider"
+                      style={{ color: C.accentLight }}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3
+                      className="font-display font-semibold text-xl md:text-2xl"
+                      style={{ color: text }}
+                    >
+                      {project.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed" style={{ color: muted }}>
+                      {project.description}
+                    </p>
+                    {project.tech.length > 0 && (
+                      <p className="text-xs font-mono" style={{ color: muted }}>
+                        {project.tech.join(" · ")}
+                      </p>
+                    )}
+                    <a
+                      href={project.link as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm transition-all duration-200 hover:gap-4"
+                      style={{ color: C.accentLight }}
+                    >
+                      Voir le Projet
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── TARIFS ────────────────────────────────────────────────── */}
+      <section
+        id="tarifs"
+        className="py-24 sm:py-32 px-6"
+        style={{ borderTop: `1px solid ${border}` }}
+      >
+        <div className="container mx-auto">
+          <span className="label mb-12 block">— Tarifs</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-12"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
+              <h2
+                className="font-display font-bold text-3xl sm:text-4xl"
+                style={{ color: text }}
+              >
+                Tarifs transparents
+              </h2>
+              <p className="text-sm max-w-sm sm:text-right" style={{ color: muted }}>
+                Étudiant passionné, tarifs compétitifs. Pas de surprise, pas de frais cachés.
+              </p>
+            </div>
+
+            {/* Pricing rows */}
+            <div style={{ borderTop: `1px solid ${border}` }}>
+              {PRICING.map((tier, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="group"
+                  style={{ borderBottom: `1px solid ${border}` }}
+                >
+                  <div
+                    className="flex flex-col md:flex-row md:items-start gap-6 py-8 px-2 transition-colors duration-200"
+                    style={{ background: "transparent" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = surf)}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                  >
+                    {/* Left: number + name + features */}
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center gap-4">
+                        <span
+                          className="font-mono text-xs uppercase tracking-wider"
+                          style={{ color: C.accentLight }}
+                        >
+                          {tier.num}
+                        </span>
+                        <h3
+                          className="font-display font-bold text-xl sm:text-2xl"
+                          style={{ color: text }}
+                        >
+                          {tier.name}
+                        </h3>
+                        {tier.badge && (
+                          <span
+                            className="text-xs font-mono uppercase tracking-wider px-2 py-0.5"
+                            style={{
+                              background: C.accent,
+                              color: "#fff",
+                            }}
+                          >
+                            {tier.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm leading-relaxed max-w-xl" style={{ color: muted }}>
+                        {tier.desc}
+                      </p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
+                        {tier.features.map((f) => (
+                          <span
+                            key={f}
+                            className="text-xs font-mono"
+                            style={{ color: muted }}
+                          >
+                            — {f}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right: price + delay + CTA */}
+                    <div className="md:text-right flex-shrink-0 space-y-3">
+                      <div
+                        className="font-display font-extrabold text-2xl sm:text-3xl leading-none"
+                        style={{ color: text }}
+                      >
+                        {tier.price}
+                      </div>
+                      <div className="text-xs font-mono" style={{ color: muted }}>
+                        Délai : {tier.delay}
+                      </div>
+                      <button
+                        onClick={() => scrollToSection("contact")}
+                        className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-4"
+                        style={{ color: C.accentLight }}
+                      >
+                        Démarrer
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Maintenance add-on note */}
+            <div className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 py-5"
+              style={{ borderTop: `1px solid ${border}` }}
+            >
+              <div>
+                <span className="text-sm font-semibold" style={{ color: text }}>
+                  Maintien mensuel
+                </span>
+                <span className="text-sm ml-3" style={{ color: muted }}>
+                  Mises à jour, corrections, évolutions — sans vous en préoccuper.
+                </span>
+              </div>
+              <span
+                className="font-display font-bold text-lg flex-shrink-0"
+                style={{ color: C.accentLight }}
+              >
+                À partir de 75 $/mois
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── CONTACT ───────────────────────────────────────────────── */}
+      <section
+        id="contact"
+        className="py-24 sm:py-32 px-6"
+        style={{ borderTop: `1px solid ${border}` }}
+      >
+        <div className="container mx-auto">
+          <span className="label mb-12 block">— Contact</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mt-12 p-8 sm:p-12"
+            style={{ border: `1px solid ${border}` }}
+          >
+            <div className="flex flex-col md:flex-row gap-12">
+              <div className="w-full md:w-1/2 space-y-6">
+                <h2
+                  className="font-display font-bold text-3xl sm:text-4xl"
+                  style={{ color: text }}
+                >
                   Travaillons Ensemble
                 </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 text-justify">
-                  Prêt à démarrer votre prochain projet ? Contactez-moi pour
-                  donner vie à vos idées!
+                <p className="leading-relaxed" style={{ color: muted }}>
+                  Prêt à démarrer votre projet ? Des questions sur les tarifs ou les
+                  disponibilités ? Envoyez-moi un message et je vous réponds rapidement.
                 </p>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-300 text-justify">
-                    <Globe className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                    <span>
-                      Des questions sur les tarfis, fonctionnements ou
-                      disponibilités?
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-300 text-justify">
-                    <Coffee className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                    <span>
-                      Prêt à commencer un projet? C'est ici que ça se passe!
-                    </span>
-                  </div>
+                <div className="pt-2 space-y-1">
+                  {[
+                    "Réponse sous 24h",
+                    "Devis gratuit et sans engagement",
+                    "Disponible pour des projets au Québec et partout ailleurs",
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-3 text-sm"
+                      style={{ color: muted }}
+                    >
+                      <span style={{ color: C.accentLight }}>—</span>
+                      {item}
+                    </div>
+                  ))}
                 </div>
               </div>
               <div className="w-full md:w-1/2">
                 <ContactForm />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
-      {/* Footer */}
-      <footer className="relative bg-gray-900 dark:bg-gray-950 text-white py-8 sm:py-12 px-4 sm:px-6">
-        <div className="absolute inset-0 chaos-grid dark:chaos-grid-dark opacity-10" />
-        <div className="container mx-auto relative">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 group">
-              <img
-                src="evoweb_logo.png"
-                alt="EvoWeb Logo"
-                className="h-24 w-24 text-indigo-600 dark:text-indigo-400 animate-rotate"
-              />
-              <span className="text-xl font-bold">Evoweb</span>
+
+      {/* ── FOOTER ────────────────────────────────────────────────── */}
+      <footer
+        className="py-12 px-6"
+        style={{ background: "#080609", borderTop: `1px solid #1E1E24` }}
+      >
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <img src="evoweb_logo.png" alt="Evoweb" className="h-10 w-10 object-contain" />
+              <span className="font-display font-bold text-lg text-[#EEEDF5]">Evoweb</span>
             </div>
-            <div className="flex space-x-6">
-              <a
-                href="https://github.com/DereckBelanger152"
-                className="hover:text-indigo-400 transition-colors transform hover:scale-110"
-              >
-                <Github className="h-6 w-6" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/dereck-bélanger-437259338/"
-                className="hover:text-indigo-400 transition-colors transform hover:scale-110"
-              >
-                <Linkedin className="h-6 w-6" />
-              </a>
+            <div className="flex gap-6">
+              {[
+                { href: "https://github.com/DereckBelanger152", Icon: Github, label: "GitHub" },
+                { href: "https://www.linkedin.com/in/dereck-bélanger-437259338/", Icon: Linkedin, label: "LinkedIn" },
+              ].map(({ href, Icon, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors"
+                  style={{ color: "#555560" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = C.accentLight)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#555560")}
+                  aria-label={label}
+                >
+                  <Icon className="h-5 w-5" />
+                </a>
+              ))}
             </div>
           </div>
-          <div className="mt-6 sm:mt-8 text-center text-gray-400">
-            © {new Date().getFullYear()} Dereck Bélanger - Tous droits réservés.
+
+          <div
+            className="mt-12 pt-8 flex flex-col sm:flex-row justify-between items-end gap-4"
+            style={{ borderTop: `1px solid #1E1E24` }}
+          >
+            <p className="text-sm" style={{ color: "#555560" }}>
+              © {new Date().getFullYear()} Dereck Bélanger — Tous droits réservés.
+            </p>
+            <span
+              className="font-display font-extrabold select-none leading-none hidden sm:block"
+              style={{ fontSize: "clamp(2rem, 6vw, 5rem)", color: "#1E1E24", letterSpacing: "-0.04em" }}
+            >
+              EVOWEB
+            </span>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-export default App;
