@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "./ThemeContext";
 import ContactForm from "./ContactForm";
+import { LEGAL } from "./legal";
 import { motion } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -40,30 +41,60 @@ const TECH_TAGS = [
 const PRICING = [
   {
     num: "01",
-    name: "Site Vitrine",
-    desc: "Un site professionnel pour présenter votre entreprise au monde.",
-    features: ["Design unique", "Responsive mobile", "Formulaire de contact", "Hébergement assisté"],
-    price: "À partir de 400 $",
-    delay: "2–3 semaines",
+    name: "Essentiel",
+    desc: "Une page complète et votre fiche Google, pour que vos clients vous trouvent et vous appellent.",
+    features: ["Site une page", "Fiche Google Business", "Formulaire de contact", "Hébergement inclus"],
+    price: "750 $",
+    delay: "2 semaines",
     badge: null,
   },
   {
     num: "02",
-    name: "Site Sur Mesure",
-    desc: "Application React complète avec animations et fonctionnalités avancées.",
-    features: ["React + TypeScript", "Animations Framer Motion", "Architecture optimisée", "SEO intégré"],
-    price: "À partir de 900 $",
-    delay: "4–8 semaines",
-    badge: null,
+    name: "Présence",
+    desc: "Votre identité au complet : un logo, vos couleurs, votre site et vos gabarits pour Facebook.",
+    features: [
+      "Logo, couleurs et polices",
+      "Site une page",
+      "Fiche Google Business",
+      "3 gabarits pour vos réseaux",
+      "Formation de 30 minutes",
+    ],
+    price: "1 200 $",
+    delay: "3 semaines",
+    badge: "Le plus choisi",
   },
   {
     num: "03",
-    name: "Site Transactionnel",
+    name: "Sur mesure",
     desc: "Boutique en ligne, réservations ou paiements intégrés directement à votre site.",
-    features: ["Intégration Stripe", "Gestion produits/commandes", "Interface admin", "Formation incluse"],
-    price: "À partir de 1 800 $",
+    features: ["Paiements en ligne", "Gestion produits/commandes", "Interface admin", "Formation incluse"],
+    price: "dès 2 000 $",
     delay: "Sur devis",
-    badge: "Nouveau",
+    badge: null,
+  },
+];
+
+// Les 4 étapes montrées dans la section « Comment ça marche ».
+const PROCESS = [
+  {
+    num: "01",
+    title: "Un appel de 15 minutes",
+    desc: "Vous me parlez de votre entreprise. Aucune préparation de votre part, aucun engagement.",
+  },
+  {
+    num: "02",
+    title: "Une maquette gratuite",
+    desc: "Je vous prépare une proposition avec vos vraies couleurs et vos vraies photos. Elle est à vous, même si vous n'allez pas plus loin.",
+  },
+  {
+    num: "03",
+    title: "Un prix fixe, écrit",
+    desc: "Un devis d'une page, un contrat, trois versements. Vous savez exactement ce que ça coûte avant de commencer.",
+  },
+  {
+    num: "04",
+    title: "En ligne en 3 semaines",
+    desc: "Vos comptes sont créés à votre nom. Tout vous appartient à la fin, c'est écrit au contrat.",
   },
 ];
 
@@ -101,7 +132,7 @@ export default function App() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-      const sections = ["accueil", "apropos", "services", "projets", "tarifs", "contact"];
+      const sections = ["accueil", "apropos", "services", "projets", "processus", "tarifs", "contact"];
       const current = sections.find((id) => {
         const el = document.getElementById(id);
         if (!el) return false;
@@ -161,6 +192,7 @@ export default function App() {
     ["accueil",  "Accueil"],
     ["apropos",  "À Propos"],
     ["services", "Services"],
+    ["processus", "Étapes"],
     ["projets",  "Projets"],
     ["tarifs",   "Tarifs"],
     ["contact",  "Contact"],
@@ -194,12 +226,12 @@ export default function App() {
           style={{ background: C.accent }}
         >
           <p className="text-white text-xs sm:text-sm font-medium truncate pr-4">
-            Nouveauté! Sites transactionnels disponibles — tarif réduit pour les premiers clients.{" "}
+            Pas encore de site web ? Je vous prépare une maquette gratuite, sans engagement.{" "}
             <button
-              onClick={() => scrollToSection("tarifs")}
+              onClick={() => scrollToSection("processus")}
               className="underline underline-offset-2 hover:opacity-80"
             >
-              Voir les tarifs →
+              Voir comment ça marche →
             </button>
           </p>
           <button
@@ -608,6 +640,74 @@ export default function App() {
         </div>
       </section>
 
+      {/* ── COMMENT ÇA MARCHE ─────────────────────────────────────── */}
+      <section
+        id="processus"
+        className="py-24 sm:py-32 px-6"
+        style={{ borderTop: `1px solid ${border}` }}
+      >
+        <div className="container mx-auto">
+          <span className="label mb-12 block">— Comment ça marche</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-12"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
+              <h2
+                className="font-display font-bold text-3xl sm:text-4xl max-w-xl"
+                style={{ color: text }}
+              >
+                Vous n'avez jamais eu de site web ?
+              </h2>
+              <p className="text-sm max-w-sm sm:text-right leading-relaxed" style={{ color: muted }}>
+                C'est le cas de la plupart de mes clients. Voici exactement comment ça se passe,
+                du premier appel jusqu'à la mise en ligne.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: border }}>
+              {PROCESS.map((step) => (
+                <div key={step.num} className="p-8 flex flex-col" style={{ background: bg }}>
+                  <span
+                    className="font-mono text-xs uppercase tracking-wider mb-4"
+                    style={{ color: C.accentLight }}
+                  >
+                    {step.num}
+                  </span>
+                  <h3 className="font-display font-semibold text-lg mb-3" style={{ color: text }}>
+                    {step.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: muted }}>
+                    {step.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div
+              className="mt-px flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-8 py-6"
+              style={{ background: surf }}
+            >
+              <p className="text-sm leading-relaxed max-w-2xl" style={{ color: muted }}>
+                La maquette est gratuite et sans engagement. Si elle ne vous plaît pas, vous la
+                gardez quand même et on en reste là.
+              </p>
+              <button
+                onClick={() => scrollToSection("contact")}
+                className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-4 flex-shrink-0"
+                style={{ color: C.accentLight }}
+              >
+                Demander ma maquette
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── TARIFS ────────────────────────────────────────────────── */}
       <section
         id="tarifs"
@@ -630,8 +730,10 @@ export default function App() {
               >
                 Tarifs transparents
               </h2>
-              <p className="text-sm max-w-sm sm:text-right" style={{ color: muted }}>
-                Étudiant passionné, tarifs compétitifs. Pas de surprise, pas de frais cachés.
+              <p className="text-sm max-w-sm sm:text-right leading-relaxed" style={{ color: muted }}>
+                Une agence demande 3 000 $ et plus pour le même travail. Je suis étudiant en
+                informatique à l'Université Laval, je travaille seul, sans bureau ni vendeur à
+                payer. C'est vous qui en profitez.
               </p>
             </div>
 
@@ -719,6 +821,43 @@ export default function App() {
                   </div>
                 </motion.div>
               ))}
+            </div>
+
+            {/* Échéancier de paiement */}
+            <div className="mt-10 p-6 sm:p-8" style={{ background: surf }}>
+              <h3 className="font-display font-bold text-lg mb-2" style={{ color: text }}>
+                Payé en trois versements
+              </h3>
+              <p className="text-sm mb-6 max-w-2xl leading-relaxed" style={{ color: muted }}>
+                Vous ne payez jamais pour quelque chose que vous n'avez pas encore vu.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {[
+                  ["40 %", "à la signature", "Réserve votre place à mon calendrier."],
+                  ["30 %", "à l'approbation du design", "Vous avez vu et validé le résultat."],
+                  ["30 %", "avant la mise en ligne", "Le site est fini, vous l'avez visité."],
+                ].map(([pct, when, why]) => (
+                  <div key={when}>
+                    <div
+                      className="font-display font-extrabold text-2xl leading-none mb-2"
+                      style={{ color: C.accentLight }}
+                    >
+                      {pct}
+                    </div>
+                    <div className="text-sm font-semibold mb-1" style={{ color: text }}>
+                      {when}
+                    </div>
+                    <p className="text-xs leading-relaxed" style={{ color: muted }}>
+                      {why}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs mt-6 leading-relaxed" style={{ color: muted }}>
+                Aucune taxe applicable. Le seul frais qui s'ajoute est votre nom de domaine,
+                environ 25 $ par année, payé directement à votre fournisseur et à votre nom.
+                L'hébergement est inclus et il n'y a aucun abonnement obligatoire.
+              </p>
             </div>
 
             {/* Maintenance add-on note */}
@@ -834,9 +973,24 @@ export default function App() {
             className="mt-12 pt-8 flex flex-col sm:flex-row justify-between items-end gap-4"
             style={{ borderTop: `1px solid #1E1E24` }}
           >
-            <p className="text-sm" style={{ color: "#555560" }}>
-              © {new Date().getFullYear()} Dereck Bélanger — Tous droits réservés.
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm" style={{ color: "#555560" }}>
+                © {new Date().getFullYear()} {LEGAL.name}, faisant affaire sous le nom Evoweb.
+                Tous droits réservés.
+              </p>
+              <p className="text-xs" style={{ color: "#454550" }}>
+                NEQ {LEGAL.neq} · {LEGAL.city} · {LEGAL.email}
+              </p>
+              <a
+                href="/confidentialite"
+                className="text-xs inline-block transition-colors"
+                style={{ color: "#555560" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = C.accentLight)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#555560")}
+              >
+                Politique de confidentialité
+              </a>
+            </div>
             <span
               className="font-display font-extrabold select-none leading-none hidden sm:block"
               style={{ fontSize: "clamp(2rem, 6vw, 5rem)", color: "#1E1E24", letterSpacing: "-0.04em" }}

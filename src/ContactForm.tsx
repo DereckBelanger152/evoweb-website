@@ -78,6 +78,18 @@ const ContactForm = () => {
           Une erreur est survenue. Veuillez réessayer.
         </p>
       )}
+      {/* Mention de la finalité de la collecte, exigée par la Loi 25. */}
+      <p className="text-xs leading-relaxed pt-2" style={{ color: "#71717A" }}>
+        Vos informations servent uniquement à répondre à votre demande. Elles ne sont jamais
+        transmises à des tiers à des fins commerciales.{" "}
+        <a
+          href="/confidentialite"
+          className="underline underline-offset-2 transition-opacity hover:opacity-70"
+          style={{ color: ACCENT_LIGHT }}
+        >
+          Politique de confidentialité
+        </a>
+      </p>
     </form>
   );
 };

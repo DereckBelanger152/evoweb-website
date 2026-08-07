@@ -1,11 +1,14 @@
 {
+    "rewrites": [
+      { "source": "/confidentialite", "destination": "/index.html" }
+    ],
     "headers": [
       {
         "source": "/(.*)",
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.emailjs.com; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.emailjs.com; object-src 'none';"
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.emailjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.emailjs.com; object-src 'none';"
           }
         ]
       }
