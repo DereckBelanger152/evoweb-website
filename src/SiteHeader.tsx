@@ -177,9 +177,12 @@ export default function SiteHeader(props: Props) {
                 className="md:hidden p-2 transition-colors"
                 style={{ border: `1px solid ${border}` }}
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Menu"
+                aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                aria-expanded={mobileMenuOpen}
               >
-                <Menu className="h-4 w-4" style={{ color: muted }} />
+                {mobileMenuOpen
+                  ? <X className="h-4 w-4" style={{ color: muted }} />
+                  : <Menu className="h-4 w-4" style={{ color: muted }} />}
               </button>
             )}
           </div>

@@ -23,13 +23,25 @@ const ContactForm = () => {
 
     try {
       await emailjs.sendForm(serviceId, templateIdForMessage, form.current, publicKey);
-      await emailjs.sendForm(serviceId, templateIdForReply,   form.current, publicKey);
-      setStatus("success");
-      form.current.reset();
     } catch (error) {
       setStatus("error");
       console.error("Error sending email:", error);
+      return;
     }
+
+    // Le message principal est parti : ce qui suit (l'accusé de réception au
+    // client) est secondaire. Ne pas afficher d'erreur si seule cette
+    // deuxième requête échoue, pour ne pas faire croire au client que son
+    // message ne s'est pas rendu alors qu'il est déjà dans notre boîte.
+    // sendForm lit le DOM en direct, donc le reset attend que les deux
+    // envois soient tentés.
+    try {
+      await emailjs.sendForm(serviceId, templateIdForReply, form.current, publicKey);
+    } catch (error) {
+      console.error("Error sending auto-reply email:", error);
+    }
+    setStatus("success");
+    form.current.reset();
   };
 
   return (
