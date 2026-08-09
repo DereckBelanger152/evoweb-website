@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
@@ -18,6 +18,7 @@ import { PRICING, ADDONS } from "./pricingData";
 import ContactForm from "./ContactForm";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
+import { useSEO } from "./useSEO";
 
 // Contenu propre à cette page — pas des données de tarification, donc pas
 // dans pricingData.ts. Traduit les features brutes de chaque forfait en
@@ -268,9 +269,11 @@ export default function Forfaits() {
   const { isDark } = useTheme();
   const T = tokensFor(isDark);
 
-  useEffect(() => {
-    document.title = "Forfaits en détail : Evoweb";
-  }, []);
+  useSEO({
+    title: "Forfaits en détail : Evoweb",
+    description: "Le détail complet des 3 forfaits Evoweb : ce qui est inclus, les extras, le paiement en trois versements et les questions les plus fréquentes.",
+    path: "/forfaits",
+  });
 
   const bg = T.canvas;
   const text = T.textPrimary;

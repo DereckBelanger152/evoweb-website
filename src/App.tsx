@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
 import { tokensFor } from "./tokens";
 import { PRICING, ADDONS, PROCESS } from "./pricingData";
+import { useSEO } from "./useSEO";
 
 const TECH_TAGS = [
   "React", "TypeScript", "Tailwind CSS", "Vite", "Node.js",
@@ -40,6 +41,12 @@ function TechMarquee({ isDark }: { isDark: boolean }) {
 
 export default function App() {
   const { isDark } = useTheme();
+
+  useSEO({
+    title: "Evoweb - Création de sites web sur mesure pour petites entreprises",
+    description: "Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer.",
+    path: "/",
+  });
 
   const projects = [
     {

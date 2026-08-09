@@ -1,6 +1,7 @@
 import { useTheme } from "./ThemeContext";
 import { LEGAL } from "./legal";
 import { tokensFor } from "./tokens";
+import { useSEO } from "./useSEO";
 
 type Section = { title: string; body: string[] };
 
@@ -75,6 +76,12 @@ const SECTIONS: Section[] = [
 export default function Confidentialite() {
   const { isDark } = useTheme();
   const T = tokensFor(isDark);
+
+  useSEO({
+    title: "Politique de confidentialité : Evoweb",
+    description: "Politique de confidentialité d'Evoweb : quels renseignements personnels sont recueillis, pourquoi, et comment les faire retirer ou corriger.",
+    path: "/confidentialite",
+  });
   const bg = T.canvas;
   const text = T.textPrimary;
   const muted = T.textMuted;

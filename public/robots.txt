@@ -1,6 +1,4 @@
 User-agent: *
-Disallow: /admin/
-Disallow: /login/
-Allow: /blog/
-Allow: /about-us/
+Allow: /
+
 Sitemap: https://www.evoweb.ca/sitemap.xml
