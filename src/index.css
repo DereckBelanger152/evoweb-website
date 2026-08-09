@@ -13,11 +13,13 @@
 
   body {
     font-family: "DM Sans", system-ui, sans-serif;
-    @apply text-[#EDE9FF] antialiased bg-[#161229];
+    /* color/text/primary + color/bg/canvas (dark) */
+    @apply text-[#EFEEF2] antialiased bg-[#141316];
   }
 
   html:not(.dark) body {
-    @apply text-[#18181B] bg-[#F5F5F8];
+    /* color/text/primary + color/bg/canvas (light) */
+    @apply text-[#1B1A1E] bg-[#F7F6F8];
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -30,15 +32,15 @@
     @apply max-w-7xl mx-auto;
   }
 
-  /* Section eyebrow label */
+  /* Section eyebrow label — color/text/muted */
   .label {
     font-family: "DM Sans", system-ui, sans-serif;
-    @apply text-xs font-medium uppercase tracking-[0.18em] text-[#71717A];
+    @apply text-xs font-medium uppercase tracking-[0.18em] text-[#645F72] dark:text-[#9C97AA];
   }
 
-  /* Flat bordered card */
+  /* Flat bordered card — color/border/default + color/bg/surface */
   .card {
-    @apply border border-[#252333] dark:border-[#252333] bg-[#100E1C] dark:bg-[#100E1C];
+    @apply border border-[#DCDAE2] dark:border-[#312E38] bg-[#FFFFFF] dark:bg-[#1B1A1E];
   }
 }
 

@@ -1,18 +1,6 @@
 import { useTheme } from "./ThemeContext";
 import { LEGAL } from "./legal";
-
-const C = {
-  accent: "#7635D5",
-  accentLight: "#9B6CE9",
-  bgDark: "#111113",
-  bgLight: "#F5F5F8",
-  textDark: "#EEEDF5",
-  textLight: "#18181B",
-  mutedDark: "#8F8F9E",
-  mutedLight: "#5E5C7A",
-  borderDark: "#2E2E38",
-  borderLight: "#DDDBE8",
-} as const;
+import { tokensFor } from "./tokens";
 
 type Section = { title: string; body: string[] };
 
@@ -86,10 +74,11 @@ const SECTIONS: Section[] = [
 
 export default function Confidentialite() {
   const { isDark } = useTheme();
-  const bg = isDark ? C.bgDark : C.bgLight;
-  const text = isDark ? C.textDark : C.textLight;
-  const muted = isDark ? C.mutedDark : C.mutedLight;
-  const border = isDark ? C.borderDark : C.borderLight;
+  const T = tokensFor(isDark);
+  const bg = T.canvas;
+  const text = T.textPrimary;
+  const muted = T.textMuted;
+  const border = T.borderDefault;
 
   return (
     <div
@@ -100,7 +89,7 @@ export default function Confidentialite() {
         <a
           href="/"
           className="text-sm inline-flex items-center gap-2 mb-16 transition-opacity hover:opacity-70"
-          style={{ color: C.accentLight }}
+          style={{ color: T.textAccent }}
         >
           ← Retour à evoweb.ca
         </a>
