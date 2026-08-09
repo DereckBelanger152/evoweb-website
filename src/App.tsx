@@ -1,35 +1,12 @@
-import { useState, useEffect } from "react";
-import {
-  ExternalLink,
-  Github,
-  ArrowRight,
-  Sun,
-  Moon,
-  Linkedin,
-  X,
-  Menu,
-} from "lucide-react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 import { useTheme } from "./ThemeContext";
 import ContactForm from "./ContactForm";
-import { LEGAL } from "./legal";
+import SiteHeader from "./SiteHeader";
+import SiteFooter from "./SiteFooter";
 import { motion } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
-
-// ─── Color tokens ────────────────────────────────────────────────────────
-const C = {
-  accent:       "#7635D5",
-  accentLight:  "#9B6CE9",
-  bgDark:       "#111113",   // neutral charcoal — no purple tint
-  surfaceDark:  "#1A1A1E",
-  bgLight:      "#F5F5F8",   // cool near-white
-  surfaceLight: "#FFFFFF",
-  textDark:     "#EEEDF5",
-  textLight:    "#18181B",
-  mutedDark:    "#8F8F9E",
-  mutedLight:   "#5E5C7A",
-  borderDark:   "#2E2E38",
-  borderLight:  "#DDDBE8",
-} as const;
+import { tokensFor } from "./tokens";
+import { PRICING, ADDONS, PROCESS } from "./pricingData";
 
 const TECH_TAGS = [
   "React", "TypeScript", "Tailwind CSS", "Vite", "Node.js",
@@ -38,83 +15,22 @@ const TECH_TAGS = [
   "Next.js", "Framer Motion", "Vercel", "JavaScript", "HTML", "CSS",
 ];
 
-const PRICING = [
-  {
-    num: "01",
-    name: "Essentiel",
-    desc: "Une page complète et votre fiche Google, pour que vos clients vous trouvent et vous appellent.",
-    features: ["Site une page", "Fiche Google Business", "Formulaire de contact", "Hébergement inclus"],
-    price: "750 $",
-    delay: "2 semaines",
-    badge: null,
-  },
-  {
-    num: "02",
-    name: "Présence",
-    desc: "Votre identité au complet : un logo, vos couleurs, votre site et vos gabarits pour Facebook.",
-    features: [
-      "Logo, couleurs et polices",
-      "Site une page",
-      "Fiche Google Business",
-      "3 gabarits pour vos réseaux",
-      "Formation de 30 minutes",
-    ],
-    price: "1 200 $",
-    delay: "3 semaines",
-    badge: "Le plus choisi",
-  },
-  {
-    num: "03",
-    name: "Sur mesure",
-    desc: "Boutique en ligne, réservations ou paiements intégrés directement à votre site.",
-    features: ["Paiements en ligne", "Gestion produits/commandes", "Interface admin", "Formation incluse"],
-    price: "dès 2 000 $",
-    delay: "Sur devis",
-    badge: null,
-  },
-];
-
-// Les 4 étapes montrées dans la section « Comment ça marche ».
-const PROCESS = [
-  {
-    num: "01",
-    title: "Un appel de 15 minutes",
-    desc: "Vous me parlez de votre entreprise. Aucune préparation de votre part, aucun engagement.",
-  },
-  {
-    num: "02",
-    title: "Une maquette gratuite",
-    desc: "Je vous prépare une proposition avec vos vraies couleurs et vos vraies photos. Elle est à vous, même si vous n'allez pas plus loin.",
-  },
-  {
-    num: "03",
-    title: "Un prix fixe, écrit",
-    desc: "Un devis d'une page, un contrat, trois versements. Vous savez exactement ce que ça coûte avant de commencer.",
-  },
-  {
-    num: "04",
-    title: "En ligne en 3 semaines",
-    desc: "Vos comptes sont créés à votre nom. Tout vous appartient à la fin, c'est écrit au contrat.",
-  },
-];
-
 function TechMarquee({ isDark }: { isDark: boolean }) {
-  const border = isDark ? C.borderDark : C.borderLight;
-  const muted  = isDark ? C.mutedDark  : C.mutedLight;
+  const T = tokensFor(isDark);
   return (
     <div
       className="overflow-hidden py-4"
-      style={{ borderTop: `1px solid ${border}`, borderBottom: `1px solid ${border}` }}
+      style={{ borderTop: `1px solid ${T.borderDefault}`, borderBottom: `1px solid ${T.borderDefault}` }}
     >
       <div className="flex whitespace-nowrap animate-marquee">
         {TECH_TAGS.map((tag, i) => (
           <span
             key={i}
             className="inline-flex items-center gap-4 px-6 text-xs font-mono uppercase tracking-widest select-none"
-            style={{ color: muted }}
+            style={{ color: T.textMuted }}
           >
             {tag}
-            <span style={{ color: C.accent }} aria-hidden>·</span>
+            <span style={{ color: T.accent }} aria-hidden>·</span>
           </span>
         ))}
       </div>
@@ -123,91 +39,58 @@ function TechMarquee({ isDark }: { isDark: boolean }) {
 }
 
 export default function App() {
-  const [isScrolled, setIsScrolled]         = useState(false);
-  const [activeSection, setActiveSection]   = useState("accueil");
-  const { isDark, toggleTheme }             = useTheme();
-  const [showPopup, setShowPopup]           = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      const sections = ["accueil", "apropos", "services", "projets", "processus", "tarifs", "contact"];
-      const current = sections.find((id) => {
-        const el = document.getElementById(id);
-        if (!el) return false;
-        const { top, bottom } = el.getBoundingClientRect();
-        return top <= 100 && bottom >= 100;
-      });
-      if (current) setActiveSection(current);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { isDark } = useTheme();
 
   const projects = [
     {
       title: "Club IA Université Laval",
-      description: "Site pour un club étudiant en intelligence artificielle",
-      image: "/cia_presentation.png",
+      description:
+        "Site web pour le club d'Intelligence Artificielle de l'Université Laval. Moyenne de 230 visites/mois, >97% de performance desktop/mobile en continu",
+      image: "site-cia.webp",
       alt: "Site web pour club Intelligence Artificielle de mon université",
-      tech: ["TypeScript", "Tailwind CSS"],
+      tech: ["TypeScript", "Tailwind CSS", "Firebase", "i18n"],
       link: "https://cia.ift.ulaval.ca",
     },
     {
       title: "Site personnel",
-      description: "Mon site portfolio si vous voulez en savoir plus sur moi!",
-      image: "portfolio_presentation.png",
+      description:
+        "Mon propre terrain de jeu : chaque nouvelle techno que j'apprends atterrit ici en premier. C'est ce site qui m'a permis de décrocher mes tout premiers clients.",
+      image: "site-portfolio.webp",
       alt: "Site web portfolio personnel",
-      tech: ["TypeScript", "JavaScript", "CSS", "HTML"],
+      tech: ["TypeScript", "Tailwind CSS", "Framer Motion"],
       link: "https://www.dereckbelanger.me",
     },
     {
       title: "Lavage à pression provincial",
-      description: "Compagnie québecoise de service de lavage à pression",
-      image: "lavagepression.png",
+      description:
+        "Client comblé, site livré: cette entreprise de lavage à pression a enfin une présence web à la hauteur de sa réputation sur le terrain.",
+      image: "site-lavagepression.png",
       alt: "Site web pour lavage à pression provincial",
-      tech: ["TypeScript", "JavaScript", "CSS", "HTML"],
+      tech: ["TypeScript", "Tailwind CSS", "Framer Motion"],
       link: "https://www.lavageapressionprovincial.com",
     },
     {
       title: "Café",
-      description: "Un prototype de site web pour une boutique de café fictive",
-      image: "/cafe_presentation.png",
+      description:
+        "Site web fictif pour un café. Il est entièrement responsive et optimisé pour la performance.",
+      image: "site-cafe.webp",
       alt: "Site web pour un café fictif",
-      tech: ["TypeScript", "CSS", "JavaScript", "HTML"],
+      tech: ["TypeScript", "Tailwind CSS", "JavaScript"],
       link: "https://coffeeshop-website-nine.vercel.app",
     },
-    {
-      title: "Garage",
-      description: "Un prototype de site web pour un garage fictif",
-      image: "garage.png",
-      alt: "Site web pour un garage fictif",
-      tech: ["TypeScript", "JavaScript", "CSS"],
-      link: "https://garage-website-alpha.vercel.app",
-    },
-  ];
-
-  const navLinks: [string, string][] = [
-    ["accueil",  "Accueil"],
-    ["apropos",  "À Propos"],
-    ["services", "Services"],
-    ["processus", "Étapes"],
-    ["projets",  "Projets"],
-    ["tarifs",   "Tarifs"],
-    ["contact",  "Contact"],
   ];
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setMobileMenuOpen(false);
   };
 
-  const bg     = isDark ? C.bgDark     : C.bgLight;
-  const text   = isDark ? C.textDark   : C.textLight;
-  const muted  = isDark ? C.mutedDark  : C.mutedLight;
-  const border = isDark ? C.borderDark : C.borderLight;
-  const surf   = isDark ? C.surfaceDark : C.surfaceLight;
+  const T      = tokensFor(isDark);
+  const bg     = T.canvas;
+  const text   = T.textPrimary;
+  const muted  = T.textMuted;
+  const border = T.borderDefault;
+  const surf   = T.surface;
+  const accentText = T.textAccent;
 
   return (
     <div
@@ -216,122 +99,7 @@ export default function App() {
     >
       <Analytics />
 
-      {/* ── ANNOUNCEMENT BAR ─────────────────────────────────────── */}
-      {showPopup && (
-        <motion.div
-          initial={{ opacity: 0, y: -40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="fixed top-0 left-0 right-0 z-[100] h-9 flex items-center justify-between px-4 sm:px-6"
-          style={{ background: C.accent }}
-        >
-          <p className="text-white text-xs sm:text-sm font-medium truncate pr-4">
-            Pas encore de site web ? Je vous prépare une maquette gratuite, sans engagement.{" "}
-            <button
-              onClick={() => scrollToSection("processus")}
-              className="underline underline-offset-2 hover:opacity-80"
-            >
-              Voir comment ça marche →
-            </button>
-          </p>
-          <button
-            onClick={() => setShowPopup(false)}
-            className="flex-shrink-0 text-white/80 hover:text-white transition-opacity ml-4"
-            aria-label="Fermer"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </motion.div>
-      )}
-
-      {/* ── NAVIGATION ───────────────────────────────────────────── */}
-      <nav
-        className="fixed left-0 right-0 z-50 transition-all duration-300 py-4"
-        style={{
-          top: showPopup ? "2.25rem" : "0",
-          background: isScrolled ? `${bg}F2` : "transparent",
-          backdropFilter: isScrolled ? "blur(12px)" : "none",
-          borderBottom: isScrolled ? `1px solid ${border}` : "none",
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="container mx-auto px-6 flex items-center justify-between"
-        >
-          <button onClick={() => scrollToSection("accueil")} className="flex items-center gap-3">
-            <img src="evoweb_logo.png" alt="Evoweb" className="h-10 w-10 object-contain" />
-            <span className="font-display font-bold text-xl" style={{ color: text }}>
-              Evoweb
-            </span>
-          </button>
-
-          <div className="flex items-center gap-5">
-            <div className="hidden md:flex gap-6">
-              {navLinks.map(([id, label]) => (
-                <button
-                  key={id}
-                  onClick={() => scrollToSection(id)}
-                  className="text-sm relative transition-colors"
-                  style={{ color: activeSection === id ? C.accentLight : muted }}
-                >
-                  {label}
-                  {activeSection === id && (
-                    <span
-                      className="absolute -bottom-1 left-0 right-0 h-px"
-                      style={{ background: C.accent }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={toggleTheme}
-              className="p-2 transition-colors"
-              style={{ border: `1px solid ${border}` }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.accentLight)}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = border)}
-              aria-label="Changer de thème"
-            >
-              {isDark
-                ? <Sun  className="h-4 w-4" style={{ color: muted }} />
-                : <Moon className="h-4 w-4" style={{ color: muted }} />}
-            </button>
-
-            <button
-              className="md:hidden p-2 transition-colors"
-              style={{ border: `1px solid ${border}` }}
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Menu"
-            >
-              <Menu className="h-4 w-4" style={{ color: muted }} />
-            </button>
-          </div>
-        </motion.div>
-
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden px-6 py-4 flex flex-col gap-4"
-            style={{ background: surf, borderTop: `1px solid ${border}` }}
-          >
-            {navLinks.map(([id, label]) => (
-              <button
-                key={id}
-                onClick={() => scrollToSection(id)}
-                className="text-sm text-left"
-                style={{ color: activeSection === id ? C.accentLight : muted }}
-              >
-                {label}
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </nav>
+      <SiteHeader variant="home" onNavigate={scrollToSection} />
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
       <section
@@ -353,19 +121,19 @@ export default function App() {
               <br />
               site web
               <br />
-              <span style={{ color: C.accentLight }}>personnalisé</span>
+              <span style={{ color: accentText }}>personnalisé</span>
               <br />
               avec Evoweb.
             </h1>
             <p className="text-lg max-w-lg mb-10 leading-relaxed" style={{ color: muted }}>
               Je transforme vos idées en sites web modernes et 100% personnalisés
-              vous permettant de vous démarquer de la concurrence.
+              pour vous démarquer de la concurrence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => scrollToSection("projets")}
                 className="font-semibold px-8 py-3 text-sm uppercase tracking-wider transition-opacity hover:opacity-85 inline-flex items-center justify-center gap-2 group"
-                style={{ background: C.accent, color: "#FFFFFF" }}
+                style={{ background: T.accent, color: T.onAccent }}
               >
                 Voir mes projets
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -374,7 +142,7 @@ export default function App() {
                 onClick={() => scrollToSection("contact")}
                 className="px-8 py-3 text-sm uppercase tracking-wider transition-colors inline-flex items-center justify-center gap-2 group"
                 style={{ border: `1px solid ${border}`, color: text }}
-                onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.accentLight)}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = accentText)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = border)}
               >
                 Me contacter
@@ -387,7 +155,7 @@ export default function App() {
           onClick={() => scrollToSection("apropos")}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 text-lg transition-colors"
           style={{ color: muted }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = C.accentLight)}
+          onMouseEnter={(e) => (e.currentTarget.style.color = accentText)}
           onMouseLeave={(e) => (e.currentTarget.style.color = muted)}
           aria-label="Défiler vers le bas"
         >
@@ -416,8 +184,8 @@ export default function App() {
             <div className="w-full md:w-5/12 flex-shrink-0">
               <div className="overflow-hidden" style={{ border: `1px solid ${border}` }}>
                 <img
-                  src="profil.png"
-                  alt="Dereck Bélanger — Fondateur Evoweb"
+                  src="photo-dereck.webp"
+                  alt="Dereck Bélanger, fondateur Evoweb"
                   className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
                 />
               </div>
@@ -443,7 +211,7 @@ export default function App() {
                   "Passionné par les défis et l'apprentissage continu",
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm" style={{ color: muted }}>
-                    <span style={{ color: C.accentLight }}>—</span>
+                    <span style={{ color: accentText }}>—</span>
                     {item}
                   </div>
                 ))}
@@ -465,7 +233,7 @@ export default function App() {
               <div key={stat} className="py-10 px-8" style={{ background: bg }}>
                 <div
                   className="font-display font-extrabold text-4xl sm:text-5xl mb-2 leading-none"
-                  style={{ color: C.accentLight }}
+                  style={{ color: accentText }}
                 >
                   {stat}
                 </div>
@@ -528,7 +296,7 @@ export default function App() {
                   </p>
                   <div
                     className="mt-8 h-px w-0 group-hover:w-full transition-all duration-500"
-                    style={{ background: C.accent }}
+                    style={{ background: T.accent }}
                   />
                 </div>
               ))}
@@ -544,7 +312,7 @@ export default function App() {
               <button
                 onClick={() => scrollToSection("contact")}
                 className="inline-flex items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-70"
-                style={{ color: C.accentLight }}
+                style={{ color: accentText }}
               >
                 Parlons-en
                 <ExternalLink className="h-4 w-4" />
@@ -604,7 +372,7 @@ export default function App() {
                   <div className="w-full md:w-1/2 space-y-4">
                     <span
                       className="font-mono text-xs uppercase tracking-wider"
-                      style={{ color: C.accentLight }}
+                      style={{ color: accentText }}
                     >
                       {String(index + 1).padStart(2, "0")}
                     </span>
@@ -627,7 +395,7 @@ export default function App() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-sm transition-all duration-200 hover:gap-4"
-                      style={{ color: C.accentLight }}
+                      style={{ color: accentText }}
                     >
                       Voir le Projet
                       <ExternalLink className="h-4 w-4" />
@@ -673,7 +441,7 @@ export default function App() {
                 <div key={step.num} className="p-8 flex flex-col" style={{ background: bg }}>
                   <span
                     className="font-mono text-xs uppercase tracking-wider mb-4"
-                    style={{ color: C.accentLight }}
+                    style={{ color: accentText }}
                   >
                     {step.num}
                   </span>
@@ -698,7 +466,7 @@ export default function App() {
               <button
                 onClick={() => scrollToSection("contact")}
                 className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-4 flex-shrink-0"
-                style={{ color: C.accentLight }}
+                style={{ color: accentText }}
               >
                 Demander ma maquette
                 <ArrowRight className="h-4 w-4" />
@@ -731,9 +499,9 @@ export default function App() {
                 Tarifs transparents
               </h2>
               <p className="text-sm max-w-sm sm:text-right leading-relaxed" style={{ color: muted }}>
-                Une agence demande 3 000 $ et plus pour le même travail. Je suis étudiant en
-                informatique à l'Université Laval, je travaille seul, sans bureau ni vendeur à
-                payer. C'est vous qui en profitez.
+                Les agences facturent souvent 3 000 $ et plus pour un site comparable. Je travaille seul, donc aucun
+                bureau ni vendeur à payer. Comme petit fournisseur, aucune taxe (TPS/TVQ) ne
+                s'ajoute non plus à votre facture. C'est là que vous économisez!
               </p>
             </div>
 
@@ -760,7 +528,7 @@ export default function App() {
                       <div className="flex items-center gap-4">
                         <span
                           className="font-mono text-xs uppercase tracking-wider"
-                          style={{ color: C.accentLight }}
+                          style={{ color: accentText }}
                         >
                           {tier.num}
                         </span>
@@ -774,8 +542,8 @@ export default function App() {
                           <span
                             className="text-xs font-mono uppercase tracking-wider px-2 py-0.5"
                             style={{
-                              background: C.accent,
-                              color: "#fff",
+                              background: T.accent,
+                              color: T.onAccent,
                             }}
                           >
                             {tier.badge}
@@ -812,11 +580,18 @@ export default function App() {
                       <button
                         onClick={() => scrollToSection("contact")}
                         className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-4"
-                        style={{ color: C.accentLight }}
+                        style={{ color: accentText }}
                       >
                         Démarrer
                         <ArrowRight className="h-4 w-4" />
                       </button>
+                      <a
+                        href={`/forfaits#${tier.slug}`}
+                        className="block text-xs underline underline-offset-2 transition-opacity hover:opacity-70"
+                        style={{ color: muted }}
+                      >
+                        En savoir plus
+                      </a>
                     </div>
                   </div>
                 </motion.div>
@@ -834,13 +609,17 @@ export default function App() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {[
                   ["40 %", "à la signature", "Réserve votre place à mon calendrier."],
-                  ["30 %", "à l'approbation du design", "Vous avez vu et validé le résultat."],
+                  [
+                    "30 %",
+                    "à l'approbation du design",
+                    "Après une semaine : logo, couleurs et maquette de la page d'accueil, présentés en appel et approuvés avant que je construise le reste.",
+                  ],
                   ["30 %", "avant la mise en ligne", "Le site est fini, vous l'avez visité."],
                 ].map(([pct, when, why]) => (
                   <div key={when}>
                     <div
                       className="font-display font-extrabold text-2xl leading-none mb-2"
-                      style={{ color: C.accentLight }}
+                      style={{ color: accentText }}
                     >
                       {pct}
                     </div>
@@ -869,15 +648,167 @@ export default function App() {
                   Maintien mensuel
                 </span>
                 <span className="text-sm ml-3" style={{ color: muted }}>
-                  Mises à jour, corrections, évolutions — sans vous en préoccuper.
+                  Mises à jour, corrections, évolutions, sans vous en préoccuper.{" "}
+                  <a
+                    href="/forfaits#entretien"
+                    className="underline underline-offset-2 transition-opacity hover:opacity-70"
+                    style={{ color: accentText }}
+                  >
+                    Ce qui est inclus
+                  </a>
                 </span>
               </div>
               <span
                 className="font-display font-bold text-lg flex-shrink-0"
-                style={{ color: C.accentLight }}
+                style={{ color: accentText }}
               >
                 À partir de 75 $/mois
               </span>
+            </div>
+
+            {/* Trousse de démarrage — incluse gratuitement */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 py-5"
+              style={{ borderTop: `1px solid ${border}` }}
+            >
+              <div>
+                <span className="text-sm font-semibold" style={{ color: text }}>
+                  Trousse de démarrage
+                </span>
+                <span className="text-sm ml-3" style={{ color: muted }}>
+                  Logos en couleur, blanc et noir, favicon, votre page de couleurs et polices,
+                  3 gabarits pour vos réseaux sociaux, et un guide complet pour la suite des choses et/ou modifier votre site
+                  vous-même, le tout dans un dossier prêt à partager.
+                </span>
+              </div>
+              <span
+                className="font-display font-bold text-lg flex-shrink-0"
+                style={{ color: T.success }}
+              >
+                Incluse, gratuitement
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── SUPPLÉMENTS ───────────────────────────────────────────── */}
+      <section
+        id="extras"
+        className="py-24 sm:py-32 px-6"
+        style={{ borderTop: `1px solid ${border}` }}
+      >
+        <div className="container mx-auto">
+          <span className="label mb-12 block">— Extras</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-12"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
+              <h2
+                className="font-display font-bold text-3xl sm:text-4xl"
+                style={{ color: text }}
+              >
+                Des extras, pas des forfaits
+              </h2>
+              <p className="text-sm max-w-sm sm:text-right leading-relaxed" style={{ color: muted }}>
+                Chaque extra s'ajoute à n'importe lequel des 3 forfaits ci-dessus, en plus de
+                votre trousse de démarrage déjà incluse. Prix fixe, une seule fois : jamais un
+                abonnement caché, jamais flou.{" "}
+                <a
+                  href="/forfaits#extras-detail"
+                  className="underline underline-offset-2 transition-opacity hover:opacity-70"
+                  style={{ color: accentText }}
+                >
+                  En savoir plus
+                </a>
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {ADDONS.map((addon) => (
+                <motion.div
+                  key={addon.num}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="group flex flex-col"
+                  style={{ border: `1px solid ${border}` }}
+                >
+                  <div className="relative overflow-hidden aspect-video">
+                    <img
+                      src={addon.image}
+                      alt={addon.alt}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                    />
+                    <span
+                      className="absolute top-3 right-3 font-mono text-xs font-bold px-2 py-1"
+                      style={{ background: T.accent, color: T.onAccent }}
+                    >
+                      {addon.price}
+                    </span>
+                  </div>
+
+                  <div className="p-6 flex flex-col gap-3 flex-1">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="font-mono text-xs uppercase tracking-wider"
+                        style={{ color: accentText }}
+                      >
+                        {addon.num}
+                      </span>
+                      <h3 className="font-display font-semibold text-base" style={{ color: text }}>
+                        {addon.title}
+                      </h3>
+                    </div>
+                    <p className="text-sm font-medium leading-snug" style={{ color: text }}>
+                      {addon.pitch}
+                    </p>
+                    <p className="text-xs leading-relaxed" style={{ color: muted }}>
+                      {addon.desc}
+                    </p>
+                    <p
+                      className="text-[11px] leading-relaxed mt-auto pt-3"
+                      style={{ color: muted, borderTop: `1px solid ${border}` }}
+                    >
+                      {addon.note}
+                    </p>
+                    <button
+                      onClick={() => scrollToSection("contact")}
+                      className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-4 mt-1"
+                      style={{ color: accentText }}
+                    >
+                      Parlons-en
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div
+              className="mt-10 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              style={{ background: surf }}
+            >
+              <div>
+                <h3 className="font-display font-bold text-lg mb-1" style={{ color: text }}>
+                  Combinez et économisez
+                </h3>
+                <p className="text-sm leading-relaxed" style={{ color: muted }}>
+                  2 extras : 10 % de rabais. 3 extras ou plus : 15 % de rabais.
+                </p>
+              </div>
+              <button
+                onClick={() => scrollToSection("contact")}
+                className="inline-flex items-center gap-2 text-sm font-semibold flex-shrink-0 transition-all duration-200 hover:gap-4"
+                style={{ color: accentText }}
+              >
+                Parlons-en
+                <ArrowRight className="h-4 w-4" />
+              </button>
             </div>
           </motion.div>
         </div>
@@ -922,7 +853,7 @@ export default function App() {
                       className="flex items-center gap-3 text-sm"
                       style={{ color: muted }}
                     >
-                      <span style={{ color: C.accentLight }}>—</span>
+                      <span style={{ color: accentText }}>—</span>
                       {item}
                     </div>
                   ))}
@@ -936,70 +867,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── FOOTER ────────────────────────────────────────────────── */}
-      <footer
-        className="py-12 px-6"
-        style={{ background: "#080609", borderTop: `1px solid #1E1E24` }}
-      >
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <img src="evoweb_logo.png" alt="Evoweb" className="h-10 w-10 object-contain" />
-              <span className="font-display font-bold text-lg text-[#EEEDF5]">Evoweb</span>
-            </div>
-            <div className="flex gap-6">
-              {[
-                { href: "https://github.com/DereckBelanger152", Icon: Github, label: "GitHub" },
-                { href: "https://www.linkedin.com/in/dereck-bélanger-437259338/", Icon: Linkedin, label: "LinkedIn" },
-              ].map(({ href, Icon, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-colors"
-                  style={{ color: "#555560" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = C.accentLight)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#555560")}
-                  aria-label={label}
-                >
-                  <Icon className="h-5 w-5" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div
-            className="mt-12 pt-8 flex flex-col sm:flex-row justify-between items-end gap-4"
-            style={{ borderTop: `1px solid #1E1E24` }}
-          >
-            <div className="space-y-2">
-              <p className="text-sm" style={{ color: "#555560" }}>
-                © {new Date().getFullYear()} {LEGAL.name}, faisant affaire sous le nom Evoweb.
-                Tous droits réservés.
-              </p>
-              <p className="text-xs" style={{ color: "#454550" }}>
-                NEQ {LEGAL.neq} · {LEGAL.city} · {LEGAL.email}
-              </p>
-              <a
-                href="/confidentialite"
-                className="text-xs inline-block transition-colors"
-                style={{ color: "#555560" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.accentLight)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#555560")}
-              >
-                Politique de confidentialité
-              </a>
-            </div>
-            <span
-              className="font-display font-extrabold select-none leading-none hidden sm:block"
-              style={{ fontSize: "clamp(2rem, 6vw, 5rem)", color: "#1E1E24", letterSpacing: "-0.04em" }}
-            >
-              EVOWEB
-            </span>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

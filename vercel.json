@@ -1,6 +1,7 @@
 {
     "rewrites": [
-      { "source": "/confidentialite", "destination": "/index.html" }
+      { "source": "/confidentialite", "destination": "/index.html" },
+      { "source": "/forfaits", "destination": "/index.html" }
     ],
     "headers": [
       {
