@@ -110,7 +110,7 @@ export const ADDONS: Addon[] = [
     num: "03",
     title: "Gabarits réseaux sociaux additionnels",
     price: "100 $",
-    image: "social-media-templates.png",
+    image: "social-media-templates.webp",
     alt: "Gabarits supplémentaires pour réseaux sociaux",
     pitch:
       "De quoi publier pendant des mois sans rouvrir un logiciel de design.",

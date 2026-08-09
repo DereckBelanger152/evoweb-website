@@ -18,7 +18,7 @@ export default function SiteFooter() {
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
-            <img src="/logo-evoweb.webp" alt="Evoweb" className="h-10 w-10 object-contain" />
+            <img src="/logo-evoweb.webp" alt="Evoweb" width={256} height={256} className="h-10 w-10 object-contain" />
             <span className="font-display font-bold text-lg" style={{ color: T.onSunken }}>Evoweb</span>
           </div>
           <div className="flex gap-6">

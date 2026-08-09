@@ -64,7 +64,7 @@ export default function App() {
       title: "Lavage à pression provincial",
       description:
         "Client comblé, site livré: cette entreprise de lavage à pression a enfin une présence web à la hauteur de sa réputation sur le terrain.",
-      image: "site-lavagepression.png",
+      image: "site-lavagepression.webp",
       alt: "Site web pour lavage à pression provincial",
       tech: ["TypeScript", "Tailwind CSS", "Framer Motion"],
       link: "https://www.lavageapressionprovincial.com",
@@ -186,6 +186,10 @@ export default function App() {
                 <img
                   src="photo-dereck.webp"
                   alt="Dereck Bélanger, fondateur Evoweb"
+                  width={1200}
+                  height={1600}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
                 />
               </div>
@@ -364,6 +368,10 @@ export default function App() {
                       <img
                         src={project.image}
                         alt={project.alt}
+                        width={1600}
+                        height={900}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
                       />
                     </div>
@@ -742,6 +750,10 @@ export default function App() {
                     <img
                       src={addon.image}
                       alt={addon.alt}
+                      width={1200}
+                      height={675}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
                     />
                     <span

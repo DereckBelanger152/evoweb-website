@@ -115,14 +115,14 @@ export default function SiteHeader(props: Props) {
         >
           {isHome ? (
             <button onClick={() => goTo("accueil")} className="flex items-center gap-3">
-              <img src="/logo-evoweb.webp" alt="Evoweb" className="h-10 w-10 object-contain" />
+              <img src="/logo-evoweb.webp" alt="Evoweb" width={256} height={256} className="h-10 w-10 object-contain" />
               <span className="font-display font-bold text-xl" style={{ color: text }}>
                 Evoweb
               </span>
             </button>
           ) : (
             <a href="/" className="flex items-center gap-3">
-              <img src="/logo-evoweb.webp" alt="Evoweb" className="h-10 w-10 object-contain" />
+              <img src="/logo-evoweb.webp" alt="Evoweb" width={256} height={256} className="h-10 w-10 object-contain" />
               <span className="font-display font-bold text-xl" style={{ color: text }}>
                 Evoweb
               </span>
