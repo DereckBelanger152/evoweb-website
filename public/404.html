@@ -4,20 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Page introuvable — Evoweb</title>
-    <!-- Une page d'erreur ne doit jamais être indexée : elle n'a pas de
-         contenu propre et diluerait les résultats du site. -->
+    <!-- Une page d'erreur ne doit jamais être indexée : elle n'a pas de contenu
+         propre et diluerait les résultats du site. -->
     <meta name="robots" content="noindex, follow" />
-    <link rel="icon" href="/logo.ico" type="image/x-icon" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=DM+Sans:opsz,wght@9..40,400&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <!-- Les déclarations @font-face sont insérées ici au build par
+         scripts/build-html.mjs, qui seul connaît le nom haché des fichiers
+         produits par Vite. Cette page est servie telle quelle par Vercel pour
+         toute route inconnue : elle ne passe pas par React et ne peut donc pas
+         partager la feuille de style de l'application. Sans polices, la
+         substitution système ci-dessous prend le relais — la page reste lisible. -->
     <style>
-      /* Page autonome : servie directement par Vercel pour toute route
-         inconnue, donc sans React ni feuille de style de l'application.
-         Les couleurs sont recopiées de src/tokens.ts (thème sombre). */
+      /* Page autonome, sans React ni feuille de style de l'application.
+         Les couleurs sont recopiées des jetons de src/index.css (thème sombre). */
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         min-height: 100vh;
@@ -27,12 +26,12 @@
         padding: 1.5rem;
         background: #141316;
         color: #efeef2;
-        font-family: "DM Sans", system-ui, sans-serif;
+        font-family: "DM Sans Variable", system-ui, sans-serif;
         -webkit-font-smoothing: antialiased;
       }
       main { max-width: 34rem; width: 100%; }
       .code {
-        font-family: "Bricolage Grotesque", system-ui, sans-serif;
+        font-family: "Bricolage Grotesque Variable", system-ui, sans-serif;
         font-weight: 800;
         font-size: clamp(4.5rem, 18vw, 9rem);
         line-height: 0.9;
@@ -41,7 +40,7 @@
         margin-bottom: 1.5rem;
       }
       h1 {
-        font-family: "Bricolage Grotesque", system-ui, sans-serif;
+        font-family: "Bricolage Grotesque Variable", system-ui, sans-serif;
         font-weight: 800;
         font-size: clamp(1.5rem, 5vw, 2rem);
         line-height: 1.1;

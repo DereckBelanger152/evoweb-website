@@ -12,27 +12,31 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useTheme } from "./ThemeContext";
-import { tokensFor } from "./tokens";
 import { PRICING, ADDONS } from "./pricingData";
+import FAQ from "./faq.json";
 import ContactForm from "./ContactForm";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import { useSEO } from "./useSEO";
 
-// Contenu propre à cette page — pas des données de tarification, donc pas
-// dans pricingData.ts. Traduit les features brutes de chaque forfait en
-// résultats concrets, à la manière du devis (voir evoweb-ops/playbook/
-// 05-devis-contrat.md : « traduire ce qu'il t'a dit à l'appel »).
+// Contenu propre à cette page — pas des données de tarification, donc pas dans
+// pricingData.ts. Traduit les features brutes de chaque forfait en résultats
+// concrets, à la manière du devis (voir evoweb-ops/playbook/05-devis-contrat.md
+// : « traduire ce qu'il t'a dit à l'appel »).
+//
+// La FAQ, elle, vit dans src/faq.json : scripts/build-html.mjs la relit au
+// build pour en produire les données structurées FAQPage que Google utilise
+// pour afficher les questions directement dans ses résultats. Deux copies du
+// texte finiraient par diverger.
 const IDEAL_FOR: Record<string, string> = {
   essentiel: "Idéal pour : être trouvé sur Google et générer des demandes de clients, sans entretien.",
   presence: "Idéal pour : bâtir aussi une image de marque reconnaissable, sur le site et les réseaux.",
   "sur-mesure": "Idéal pour : quand votre site vitrine doit aussi vendre en ligne, prendre des réservations ou gérer un catalogue.",
 };
 
-// Bullets en langage bénéfice — le "pourquoi" derrière chaque forfait, pas
-// une redite de la liste technique de pricingData.ts. Le préfixe **...**
-// (rendu en gras par renderBold) souligne l'héritage entre paliers.
+// Bullets en langage bénéfice — le « pourquoi » derrière chaque forfait, pas
+// une redite de la liste technique de pricingData.ts. Le préfixe **...** est
+// rendu en gras par renderBold, pour souligner l'héritage entre paliers.
 const CONCRETE: Record<string, string[]> = {
   essentiel: [
     "Votre page répond tout de suite aux questions qu'on vous pose le plus souvent : vos heures, si vous faites tel travail, où vous êtes exactement, etc.",
@@ -49,6 +53,12 @@ const CONCRETE: Record<string, string[]> = {
     "Une interface simple pour voir vos commandes ou vos réservations, pensée pour vous, pas pour un développeur.",
     "Le prix et le délai dépendent de ce qu'on construit ensemble, confirmés par écrit avec le devis, jamais improvisés.",
   ],
+};
+
+// Ce que chaque palier ajoute par-dessus le précédent, en toutes lettres.
+const INHERITS_NOTE: Record<string, string> = {
+  presence: "Tout ce qu'il y a dans Essentiel, plus :",
+  "sur-mesure": "Tout ce qu'il y a dans Présence (et donc Essentiel aussi), plus :",
 };
 
 const NOT_INCLUDED = [
@@ -165,54 +175,7 @@ const TRUST = [
   },
 ];
 
-const FAQ = [
-  {
-    q: "Est-ce que je vais être « pris » avec vous ?",
-    a: "Non. Le domaine et la fiche Google sont à votre nom dès le premier jour, et votre contenu vous appartient. Le site est construit et hébergé sur les systèmes d'Evoweb; si un jour vous voulez travailler avec quelqu'un d'autre, je vous transfère l'accès complet et une copie du site dans les 10 jours ouvrables, sans frais, pour repartir ailleurs.",
-  },
-  {
-    q: "Un ami ou un neveu pourrait me faire ça moins cher, pourquoi pas lui ?",
-    a: "C'est possible, et ça se peut que ce soit un bon choix. La différence se voit surtout dans six mois, s'il devient occupé : ici, il y a un contrat écrit, un échéancier et une facture. Et si un jour vous voulez que quelqu'un d'autre s'en occupe (lui ou n'importe qui), votre domaine et votre fiche Google sont déjà à votre nom, et je vous transfère le reste sans frais, c'est écrit au contrat.",
-  },
-  {
-    q: "Qu'est-ce qui arrive si je n'aime pas le design ?",
-    a: "L'appel et la maquette sont gratuits et sans engagement. Vous la gardez même si vous n'allez pas plus loin. Une fois le projet lancé, vous validez l'identité visuelle et la maquette de la page d'accueil avant que je construise le reste, puis deux séries de modifications sont incluses.",
-  },
-  {
-    q: "De quoi avez-vous besoin de moi pour commencer ?",
-    a: "Deux choses, envoyées quand ça vous adonne : vos heures d'ouverture exactes et la liste de vos services en vrac (je m'occupe de la mise en forme). Si vous avez 5 à 10 photos de votre local, prises au téléphone, tant mieux. Sinon, on choisit ensemble des images qui vous représentent bien. Le reste, je le complète avec vos avis Google et votre page Facebook.",
-  },
-  {
-    q: "Y a-t-il des frais cachés ou un abonnement obligatoire ?",
-    a: "Non. Le seul montant qui revient chaque année est votre nom de domaine (environ 25 $), payé directement au fournisseur. L'hébergement est inclus, sans abonnement. L'entretien mensuel est optionnel : si vous ne le prenez pas, le site continue de fonctionner pareil.",
-  },
-  {
-    q: "Pourquoi c'est moins cher qu'une agence ?",
-    a: "Je travaille seul, un projet à la fois, sans bureau ni vendeur à payer. Comme petit fournisseur, aucune taxe ne s'ajoute non plus à votre facture. Je suis aussi étudiant en informatique à l'Université Laval : ça explique le prix, pas la rigueur. Même contrat, même échéancier écrit, même sérieux.",
-  },
-  {
-    q: "Le devis a-t-il une date d'expiration ?",
-    a: "Oui, 7 jours, pas pour vous mettre de pression, mais pour qu'il y ait une date claire plutôt qu'un « on s'en reparle » qui traîne. S'il expire, il peut être réactivé plus tard, souvent au même prix.",
-  },
-  {
-    q: "Combien de temps ça prend ?",
-    a: "2 semaines pour Essentiel, 3 semaines pour Présence. Pour Sur mesure, ça dépend de ce qu'on construit (paiements, réservations, gestion de produits) : le délai est confirmé avec le devis.",
-  },
-  {
-    q: "Est-ce que je vais pouvoir modifier mon site moi-même après ?",
-    a: "Pour ce qui revient souvent (vos heures, une photo, un texte), oui : une formation de 30 minutes vous montre exactement comment, et vous repartez avec un guide écrit. Pour le reste, l'entretien mensuel existe justement pour ça.",
-  },
-  {
-    q: "Mon site va-t-il être conforme aux lois du Québec ?",
-    a: "Oui, sur les trois forfaits. La Loi 25 (renseignements personnels) et la Loi 96 (langue française) s'appliquent dès qu'un site a un formulaire de contact, donc à peu près tout le monde. Politique de confidentialité et site en français sont inclus d'office.",
-  },
-  {
-    q: "Comment je paie, et est-ce sécuritaire ?",
-    a: "En trois versements liés à ce que vous voyez : 40 % à la signature, 30 % quand vous approuvez le design fini, 30 % avant que le site devienne public. Par virement Interac (aucuns frais) ou par carte via une facture Stripe sécurisée (des frais de 2,9 % + 0,30 $ s'appliquent si vous choisissez cette option). Je ne vois et ne conserve jamais votre numéro de carte.",
-  },
-];
-
-const QUICK_NAV: [string, string][] = [
+const QUICK_NAV: [href: string, label: string][] = [
   ["#plans", "Forfaits"],
   ["#extras-detail", "Extras"],
   ["#entretien", "Entretien"],
@@ -222,81 +185,61 @@ const QUICK_NAV: [string, string][] = [
   ["#forfaits-contact", "Contact"],
 ];
 
-// Rend le **texte** entre doubles astérisques en gras — utilisé pour
-// souligner l'héritage entre paliers dans les bullets "Concrètement".
+// Rend le **texte** entre doubles astérisques en gras.
 function renderBold(text: string) {
-  return text.split(/\*\*(.*?)\*\*/g).map((part, i) =>
-    i % 2 === 1 ? <strong key={i} className="font-semibold" style={{ color: "inherit" }}>{part}</strong> : part
-  );
+  return text
+    .split(/\*\*(.*?)\*\*/g)
+    .map((part, i) => (i % 2 === 1 ? <strong key={i} className="font-semibold">{part}</strong> : part));
 }
 
-// Ce que chaque palier ajoute par-dessus le précédent, en toutes lettres —
-// pour que l'héritage entre forfaits soit explicite dans "Ce qui est inclus".
-const INHERITS_NOTE: Record<string, string> = {
-  presence: "Tout ce qu'il y a dans Essentiel, plus :",
-  "sur-mesure": "Tout ce qu'il y a dans Présence (et donc Essentiel aussi), plus :",
-};
-
-function FaqItem({ q, a, border, text, muted, accentText }: {
-  q: string; a: string; border: string; text: string; muted: string; accentText: string;
-}) {
+function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ borderBottom: `1px solid ${border}` }}>
+    <div className="border-b border-line">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between gap-4 py-6 text-left"
         aria-expanded={open}
       >
-        <span className="font-display font-semibold text-base sm:text-lg" style={{ color: text }}>
-          {q}
-        </span>
+        <span className="font-display font-semibold text-base sm:text-lg">{q}</span>
         <ChevronDown
-          className="h-5 w-5 flex-shrink-0 transition-transform duration-200"
-          style={{ color: accentText, transform: open ? "rotate(180deg)" : "none" }}
+          className={`h-5 w-5 flex-shrink-0 text-accent transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+          aria-hidden="true"
         />
       </button>
-      {open && (
-        <p className="text-sm leading-relaxed pb-6 pr-8 max-w-2xl" style={{ color: muted }}>
-          {a}
-        </p>
-      )}
+      {open && <p className="text-sm leading-relaxed pb-6 pr-8 max-w-2xl text-muted">{a}</p>}
     </div>
   );
 }
 
+// Ce qu'un palier ajoute par rapport au précédent : les features déjà listées
+// plus haut sont retirées pour que la colonne « Ce qui est inclus » ne répète
+// pas trois fois les mêmes lignes.
+function newFeatures(slug: string) {
+  const index = PRICING.findIndex((tier) => tier.slug === slug);
+  const previous = index > 0 ? PRICING[index - 1].features : [];
+  return PRICING[index].features.filter((feature) => !previous.includes(feature));
+}
+
 export default function Forfaits() {
-  const { isDark } = useTheme();
-  const T = tokensFor(isDark);
-
   useSEO("/forfaits");
-
-  const bg = T.canvas;
-  const text = T.textPrimary;
-  const muted = T.textMuted;
-  const border = T.borderDefault;
-  const accentText = T.textAccent;
 
   const scrollToContact = () => {
     document.getElementById("forfaits-contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div
-      className="min-h-screen overflow-x-hidden font-body transition-colors duration-300"
-      style={{ background: bg, color: text }}
-    >
+    <div className="min-h-screen font-body bg-canvas text-fg">
       <SiteHeader variant="subpage" />
 
-      <div className="container mx-auto px-6 pt-36 pb-16 max-w-4xl">
+      <main id="contenu" className="container mx-auto px-6 pt-36 pb-16 max-w-4xl">
         <span className="label mb-6 block">— Forfaits en détail</span>
-        <h1
-          className="font-display font-extrabold text-3xl sm:text-5xl mb-6 leading-tight"
-          style={{ color: text }}
-        >
+        <h1 className="font-display font-extrabold text-3xl sm:text-5xl mb-6 leading-tight">
           Tout ce qu'il y a à savoir, avant de décider
         </h1>
-        <p className="text-base sm:text-lg leading-relaxed max-w-2xl mb-10" style={{ color: muted }}>
+        <p className="text-base sm:text-lg leading-relaxed max-w-2xl mb-10 text-muted">
           Cette page existe pour que vous n'ayez pas à deviner. Ce qui est inclus, ce qui ne l'est
           pas, comment ça se déroule, comment vous êtes protégé, et les questions qu'on me pose le
           plus souvent. S'il en manque une, écrivez-moi. Je préfère que tout soit clair avant que vous
@@ -304,39 +247,36 @@ export default function Forfaits() {
         </p>
 
         <nav
-          className="flex flex-wrap gap-x-6 gap-y-2 mb-20 pb-8"
-          style={{ borderBottom: `1px solid ${border}` }}
+          aria-label="Sommaire de la page"
+          className="flex flex-wrap gap-x-6 gap-y-2 mb-20 pb-8 border-b border-line"
         >
           {QUICK_NAV.map(([href, label]) => (
             <a
               key={href}
               href={href}
-              className="text-sm font-medium transition-opacity hover:opacity-70"
-              style={{ color: accentText }}
+              className="text-sm font-medium text-accent transition-opacity hover:opacity-70"
             >
               {label}
             </a>
           ))}
         </nav>
 
-        {/* ── FORFAITS ──────────────────────────────────────────── */}
-        <section id="plans" className="mb-24 scroll-mt-24">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-10" style={{ color: text }}>
-            Les 3 forfaits
-          </h2>
+        {/* ── FORFAITS ─────────────────────────────────────────────── */}
+        <section id="plans" className="mb-24">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-10">Les 3 forfaits</h2>
 
-          <div className="mb-10 p-6 sm:p-8" style={{ background: T.surface }}>
-            <h3 className="font-display font-bold text-lg mb-2" style={{ color: text }}>
+          <div className="mb-10 p-6 sm:p-8 bg-surface">
+            <h3 className="font-display font-bold text-lg mb-2">
               Sur les trois forfaits, sans exception
             </h3>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: muted }}>
+            <p className="text-sm leading-relaxed mb-5 text-muted">
               Avant même de comparer les forfaits ci-dessous : voici ce qui est acquis peu importe
               celui que vous choisissez.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
               {ALWAYS_INCLUDED.map((item) => (
-                <div key={item} className="flex items-start gap-3 text-sm" style={{ color: muted }}>
-                  <span style={{ color: accentText }}>—</span>
+                <div key={item} className="flex items-start gap-3 text-sm text-muted">
+                  <span className="text-accent">—</span>
                   {item}
                 </div>
               ))}
@@ -352,104 +292,87 @@ export default function Forfaits() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="p-6 sm:p-8 scroll-mt-24"
-                style={{ border: `1px solid ${border}` }}
+                className="p-6 sm:p-8 border border-line"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                   <div className="flex items-center gap-4 flex-wrap">
-                    <span className="font-mono text-xs uppercase tracking-wider" style={{ color: accentText }}>
+                    <span className="font-mono text-xs uppercase tracking-wider text-accent">
                       {tier.num}
                     </span>
-                    <h3 className="font-display font-bold text-2xl" style={{ color: text }}>
-                      {tier.name}
-                    </h3>
+                    <h3 className="font-display font-bold text-2xl">{tier.name}</h3>
                     {tier.badge && (
-                      <span
-                        className="text-xs font-mono uppercase tracking-wider px-2 py-0.5"
-                        style={{ background: T.accent, color: T.onAccent }}
-                      >
+                      <span className="text-xs font-mono uppercase tracking-wider px-2 py-0.5 bg-brand text-on-brand">
                         {tier.badge}
                       </span>
                     )}
                   </div>
                   <div className="sm:text-right flex-shrink-0">
-                    <div className="font-display font-extrabold text-2xl sm:text-3xl leading-none" style={{ color: text }}>
+                    <div className="font-display font-extrabold text-2xl sm:text-3xl leading-none">
                       {tier.price}
                     </div>
-                    <div className="text-xs font-mono mt-1" style={{ color: muted }}>
-                      Délai : {tier.delay}
-                    </div>
+                    <div className="text-xs font-mono mt-1 text-muted">Délai : {tier.delay}</div>
                   </div>
                 </div>
 
-                <p className="text-sm sm:text-base leading-relaxed mb-1 max-w-2xl" style={{ color: muted }}>
+                <p className="text-sm sm:text-base leading-relaxed mb-1 max-w-2xl text-muted">
                   {tier.desc}
                 </p>
-                <p className="text-xs font-medium mb-6" style={{ color: accentText }}>
-                  {IDEAL_FOR[tier.slug]}
-                </p>
+                <p className="text-xs font-medium mb-6 text-accent">{IDEAL_FOR[tier.slug]}</p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-14 mb-6">
                   <div>
-                    <span className="text-xs font-semibold uppercase tracking-wider block mb-3" style={{ color: text }}>
+                    <span className="text-xs font-semibold uppercase tracking-wider block mb-3">
                       Concrètement
                     </span>
                     <div className="space-y-2">
-                      {CONCRETE[tier.slug].map((c) => (
-                        <div key={c} className="flex items-start gap-2 text-sm leading-relaxed" style={{ color: muted }}>
-                          <span className="flex-shrink-0" style={{ color: accentText }}>—</span>
-                          <span>{renderBold(c)}</span>
+                      {CONCRETE[tier.slug].map((line) => (
+                        <div
+                          key={line}
+                          className="flex items-start gap-2 text-sm leading-relaxed text-muted"
+                        >
+                          <span className="flex-shrink-0 text-accent">—</span>
+                          <span>{renderBold(line)}</span>
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div className="p-5 sm:p-6" style={{ background: T.surface }}>
-                    <span className="text-xs font-semibold uppercase tracking-wider block mb-3" style={{ color: text }}>
+                  <div className="p-5 sm:p-6 bg-surface">
+                    <span className="text-xs font-semibold uppercase tracking-wider block mb-3">
                       Ce qui est inclus
                     </span>
                     {INHERITS_NOTE[tier.slug] && (
-                      <p className="text-sm font-semibold mb-3" style={{ color: text }}>
-                        {INHERITS_NOTE[tier.slug]}
-                      </p>
+                      <p className="text-sm font-semibold mb-3">{INHERITS_NOTE[tier.slug]}</p>
                     )}
                     <div className="space-y-2">
-                      {(() => {
-                        const prevIndex = PRICING.findIndex((t) => t.slug === tier.slug) - 1;
-                        const prevFeatures = prevIndex >= 0 ? PRICING[prevIndex].features : [];
-                        const shownFeatures = tier.features.filter((f) => !prevFeatures.includes(f));
-                        return shownFeatures.map((f) => (
-                          <div key={f} className="text-sm" style={{ color: muted }}>
-                            — {f}
-                          </div>
-                        ));
-                      })()}
+                      {newFeatures(tier.slug).map((feature) => (
+                        <div key={feature} className="text-sm text-muted">
+                          — {feature}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
 
                 <button
                   onClick={scrollToContact}
-                  className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-4"
-                  style={{ color: accentText }}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-accent transition-all duration-200 hover:gap-4"
                 >
                   Démarrer avec {tier.name}
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </button>
               </motion.div>
             ))}
           </div>
 
-          <div className="mt-6 p-6 sm:p-8" style={{ border: `1px solid ${border}` }}>
-            <h3 className="font-display font-bold text-lg mb-2" style={{ color: text }}>
-              Ce qui n'est pas inclus
-            </h3>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: muted }}>
+          <div className="mt-6 p-6 sm:p-8 border border-line">
+            <h3 className="font-display font-bold text-lg mb-2">Ce qui n'est pas inclus</h3>
+            <p className="text-sm leading-relaxed mb-5 text-muted">
               Dit clairement, tout de suite, pour qu'il n'y ait de surprise ni d'un bord ni de l'autre.
             </p>
             <div className="space-y-3">
               {NOT_INCLUDED.map((item) => (
-                <div key={item} className="flex items-start gap-3 text-sm leading-relaxed" style={{ color: muted }}>
-                  <span className="flex-shrink-0" style={{ color: accentText }}>—</span>
+                <div key={item} className="flex items-start gap-3 text-sm leading-relaxed text-muted">
+                  <span className="flex-shrink-0 text-accent">—</span>
                   {item}
                 </div>
               ))}
@@ -457,12 +380,10 @@ export default function Forfaits() {
           </div>
         </section>
 
-        {/* ── EXTRAS ───────────────────────────────────────── */}
-        <section id="extras-detail" className="mb-24 scroll-mt-24">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3" style={{ color: text }}>
-            Les extras
-          </h2>
-          <p className="text-sm sm:text-base leading-relaxed max-w-2xl mb-10" style={{ color: muted }}>
+        {/* ── EXTRAS ───────────────────────────────────────────────── */}
+        <section id="extras-detail" className="mb-24">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3">Les extras</h2>
+          <p className="text-sm sm:text-base leading-relaxed max-w-2xl mb-10 text-muted">
             Le détail technique de chaque extra, si vous voulez creuser avant de décider.
             S'ajoutent à n'importe lequel des 3 forfaits. Prix fixe, une seule fois : jamais un
             abonnement caché.
@@ -470,30 +391,20 @@ export default function Forfaits() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {ADDONS.map((addon) => (
-              <div key={addon.num} className="p-6 flex flex-col gap-3" style={{ border: `1px solid ${border}` }}>
+              <div key={addon.num} className="p-6 flex flex-col gap-3 border border-line">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs uppercase tracking-wider" style={{ color: accentText }}>
+                    <span className="font-mono text-xs uppercase tracking-wider text-accent">
                       {addon.num}
                     </span>
-                    <h3 className="font-display font-semibold text-base" style={{ color: text }}>
-                      {addon.title}
-                    </h3>
+                    <h3 className="font-display font-semibold text-base">{addon.title}</h3>
                   </div>
-                  <span
-                    className="font-mono text-xs font-bold px-2 py-1 flex-shrink-0"
-                    style={{ background: T.accent, color: T.onAccent }}
-                  >
+                  <span className="font-mono text-xs font-bold px-2 py-1 flex-shrink-0 bg-brand text-on-brand">
                     {addon.price}
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed" style={{ color: muted }}>
-                  {addon.desc}
-                </p>
-                <p
-                  className="text-[11px] leading-relaxed pt-3"
-                  style={{ color: muted, borderTop: `1px solid ${border}` }}
-                >
+                <p className="text-sm leading-relaxed text-muted">{addon.desc}</p>
+                <p className="text-[11px] leading-relaxed pt-3 text-muted border-t border-line">
                   {addon.note}
                 </p>
               </div>
@@ -501,48 +412,45 @@ export default function Forfaits() {
           </div>
         </section>
 
-        {/* ── ENTRETIEN MENSUEL ─────────────────────────────────── */}
-        <section id="entretien" className="mb-24 scroll-mt-24">
+        {/* ── ENTRETIEN MENSUEL ────────────────────────────────────── */}
+        <section id="entretien" className="mb-24">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
             <div>
-              <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3" style={{ color: text }}>
+              <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3">
                 Entretien mensuel
               </h2>
-              <p className="text-sm sm:text-base leading-relaxed max-w-xl" style={{ color: muted }}>
+              <p className="text-sm sm:text-base leading-relaxed max-w-xl text-muted">
                 Optionnel, proposé une seule fois à la livraison, sans insistance. Si vous ne le
                 prenez pas, le site continue de fonctionner exactement pareil.
               </p>
             </div>
-            <div className="font-display font-extrabold text-2xl sm:text-3xl flex-shrink-0" style={{ color: text }}>
+            <div className="font-display font-extrabold text-2xl sm:text-3xl flex-shrink-0">
               75 $/mois
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ border: `1px solid ${border}` }}>
-            <div className="p-6 sm:p-8" style={{ borderBottom: `1px solid ${border}` }}>
-              <span className="text-xs font-semibold uppercase tracking-wider block mb-4" style={{ color: accentText }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 border border-line">
+            <div className="p-6 sm:p-8 border-b border-line">
+              <span className="text-xs font-semibold uppercase tracking-wider block mb-4 text-accent">
                 Inclus
               </span>
               <div className="space-y-2">
                 {MAINTENANCE.included.map((item) => (
-                  <div key={item} className="flex items-start gap-3 text-sm" style={{ color: muted }}>
-                    <span style={{ color: accentText }}>—</span>
+                  <div key={item} className="flex items-start gap-3 text-sm text-muted">
+                    <span className="text-accent">—</span>
                     {item}
                   </div>
                 ))}
               </div>
             </div>
-            <div
-              className="p-6 sm:p-8"
-              style={{ borderBottom: `1px solid ${border}`, borderLeft: `1px solid ${border}` }}
-            >
-              <span className="text-xs font-semibold uppercase tracking-wider block mb-4" style={{ color: text }}>
+            <div className="p-6 sm:p-8 border-b border-l border-line">
+              <span className="text-xs font-semibold uppercase tracking-wider block mb-4">
                 Pas inclus
               </span>
               <div className="space-y-2">
                 {MAINTENANCE.notIncluded.map((item) => (
-                  <div key={item} className="flex items-start gap-3 text-sm" style={{ color: muted }}>
-                    <span style={{ color: muted }}>—</span>
+                  <div key={item} className="flex items-start gap-3 text-sm text-muted">
+                    <span>—</span>
                     {item}
                   </div>
                 ))}
@@ -551,98 +459,80 @@ export default function Forfaits() {
           </div>
         </section>
 
-        {/* ── COMMENT JE TRAVAILLE ──────────────────────────────── */}
-        <section id="comment" className="mb-24 scroll-mt-24">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-10" style={{ color: text }}>
-            Comment je travaille
-          </h2>
+        {/* ── COMMENT JE TRAVAILLE ─────────────────────────────────── */}
+        <section id="comment" className="mb-24">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-10">Comment je travaille</h2>
           <div className="space-y-8">
             {TIMELINE.map((step) => (
               <div key={step.num} className="flex gap-6">
-                <span className="font-mono text-sm flex-shrink-0 w-6 pt-1" style={{ color: accentText }}>
+                <span className="font-mono text-sm flex-shrink-0 w-6 pt-1 text-accent">
                   {step.num}
                 </span>
-                <div className="pb-2 pl-6" style={{ borderLeft: `1px solid ${border}` }}>
-                  <h3 className="font-display font-semibold text-lg mb-2" style={{ color: text }}>
-                    {step.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed max-w-2xl" style={{ color: muted }}>
-                    {step.desc}
-                  </p>
+                <div className="pb-2 pl-6 border-l border-line">
+                  <h3 className="font-display font-semibold text-lg mb-2">{step.title}</h3>
+                  <p className="text-sm leading-relaxed max-w-2xl text-muted">{step.desc}</p>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ── CONFIANCE & SÉCURITÉ ──────────────────────────────── */}
-        <section id="confiance" className="mb-24 scroll-mt-24">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3" style={{ color: text }}>
-            Confiance & sécurité
-          </h2>
-          <p className="text-sm sm:text-base leading-relaxed max-w-2xl mb-10" style={{ color: muted }}>
+        {/* ── CONFIANCE & SÉCURITÉ ─────────────────────────────────── */}
+        <section id="confiance" className="mb-24">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3">Confiance &amp; sécurité</h2>
+          <p className="text-sm sm:text-base leading-relaxed max-w-2xl mb-10 text-muted">
             Les questions qu'on ne pense pas toujours à poser, mais qui comptent le plus.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px mb-10" style={{ background: border }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px mb-10 bg-line">
             {TRUST.map(({ Icon, title, desc }) => (
-              <div key={title} className="p-6 sm:p-8 flex flex-col gap-3" style={{ background: bg }}>
-                <Icon className="h-5 w-5" style={{ color: accentText }} />
-                <h3 className="font-display font-semibold text-base" style={{ color: text }}>
-                  {title}
-                </h3>
-                <p className="text-sm leading-relaxed" style={{ color: muted }}>
-                  {desc}
-                </p>
+              <div key={title} className="p-6 sm:p-8 flex flex-col gap-3 bg-canvas">
+                <Icon className="h-5 w-5 text-accent" aria-hidden="true" />
+                <h3 className="font-display font-semibold text-base">{title}</h3>
+                <p className="text-sm leading-relaxed text-muted">{desc}</p>
               </div>
             ))}
           </div>
 
-          <h3 className="font-display font-bold text-lg mb-4" style={{ color: text }}>
-            Qui possède quoi
-          </h3>
-          <div style={{ border: `1px solid ${border}` }}>
-            <div
-              className="hidden sm:grid sm:grid-cols-4 gap-4 px-6 py-3"
-              style={{ borderBottom: `1px solid ${border}`, background: T.surface }}
-            >
-              {["Service", "À qui", "Payé par", "Coût réel"].map((h) => (
-                <span key={h} className="text-xs font-semibold uppercase tracking-wider" style={{ color: text }}>
-                  {h}
+          <h3 className="font-display font-bold text-lg mb-4">Qui possède quoi</h3>
+          <div className="border border-line">
+            <div className="hidden sm:grid sm:grid-cols-4 gap-4 px-6 py-3 border-b border-line bg-surface">
+              {["Service", "À qui", "Payé par", "Coût réel"].map((heading) => (
+                <span key={heading} className="text-xs font-semibold uppercase tracking-wider">
+                  {heading}
                 </span>
               ))}
             </div>
             {OWNERSHIP.map((row, i) => (
               <div
                 key={row.service}
-                className="grid grid-cols-1 sm:grid-cols-4 gap-1 sm:gap-4 px-6 py-4"
-                style={{ borderBottom: i < OWNERSHIP.length - 1 ? `1px solid ${border}` : "none" }}
+                className={`grid grid-cols-1 sm:grid-cols-4 gap-1 sm:gap-4 px-6 py-4 ${
+                  i < OWNERSHIP.length - 1 ? "border-b border-line" : ""
+                }`}
               >
-                <span className="text-sm font-semibold sm:font-medium" style={{ color: text }}>
-                  {row.service}
-                </span>
-                <span className="text-sm" style={{ color: muted }}>
-                  <span className="sm:hidden font-semibold" style={{ color: text }}>À qui : </span>
+                <span className="text-sm font-semibold sm:font-medium">{row.service}</span>
+                <span className="text-sm text-muted">
+                  <span className="sm:hidden font-semibold text-fg">À qui : </span>
                   {row.owner}
                 </span>
-                <span className="text-sm" style={{ color: muted }}>
-                  <span className="sm:hidden font-semibold" style={{ color: text }}>Payé par : </span>
+                <span className="text-sm text-muted">
+                  <span className="sm:hidden font-semibold text-fg">Payé par : </span>
                   {row.payer}
                 </span>
-                <span className="text-sm font-mono" style={{ color: accentText }}>
-                  <span className="sm:hidden font-semibold font-sans" style={{ color: text }}>Coût : </span>
+                <span className="text-sm font-mono text-accent">
+                  <span className="sm:hidden font-semibold font-sans text-fg">Coût : </span>
                   {row.cost}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 p-6 sm:p-8 flex gap-4" style={{ border: `1px solid ${T.warning}` }}>
-            <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: T.warning }} />
+          <div className="mt-6 p-6 sm:p-8 flex gap-4 border border-warning">
+            <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5 text-warning" aria-hidden="true" />
             <div>
-              <h4 className="font-display font-semibold text-base mb-2" style={{ color: text }}>
+              <h4 className="font-display font-semibold text-base mb-2">
                 Un avertissement qui peut vous éviter une arnaque
               </h4>
-              <p className="text-sm leading-relaxed" style={{ color: muted }}>
+              <p className="text-sm leading-relaxed text-muted">
                 Le seul montant qui revient chaque année est le renouvellement de votre domaine. Si
                 vous recevez un courriel qui vous demande de payer pour votre domaine et qu'il ne
                 vient pas exactement de votre fournisseur (indiqué dans votre document « Vos
@@ -654,33 +544,21 @@ export default function Forfaits() {
           </div>
         </section>
 
-        {/* ── FAQ ───────────────────────────────────────────────── */}
-        <section id="faq" className="mb-24 scroll-mt-24">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-10" style={{ color: text }}>
-            Questions fréquentes
-          </h2>
-          <div style={{ borderTop: `1px solid ${border}` }}>
+        {/* ── FAQ ──────────────────────────────────────────────────── */}
+        <section id="faq" className="mb-24">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl mb-10">Questions fréquentes</h2>
+          <div className="border-t border-line">
             {FAQ.map((item) => (
-              <FaqItem
-                key={item.q}
-                q={item.q}
-                a={item.a}
-                border={border}
-                text={text}
-                muted={muted}
-                accentText={accentText}
-              />
+              <FaqItem key={item.q} q={item.q} a={item.a} />
             ))}
           </div>
         </section>
 
-        {/* ── CONTACT ───────────────────────────────────────────── */}
-        <section id="forfaits-contact" className="scroll-mt-24">
-          <div className="p-8 sm:p-12" style={{ border: `1px solid ${border}` }}>
-            <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3" style={{ color: text }}>
-              Prêt à commencer ?
-            </h2>
-            <p className="text-sm sm:text-base leading-relaxed max-w-xl mb-8" style={{ color: muted }}>
+        {/* ── CONTACT ──────────────────────────────────────────────── */}
+        <section id="forfaits-contact">
+          <div className="p-8 sm:p-12 border border-line">
+            <h2 className="font-display font-bold text-2xl sm:text-3xl mb-3">Prêt à commencer ?</h2>
+            <p className="text-sm sm:text-base leading-relaxed max-w-xl mb-8 text-muted">
               Qu'on se soit déjà parlé ou non, voici comment démarrer : un message, et je vous
               réponds pour fixer un appel de 15 minutes, sans frais ni engagement.
             </p>
@@ -689,7 +567,7 @@ export default function Forfaits() {
             </div>
           </div>
         </section>
-      </div>
+      </main>
 
       <SiteFooter />
     </div>

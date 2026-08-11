@@ -2,23 +2,49 @@
 <html lang="fr-CA" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="canonical" href="https://www.evoweb.ca/" />
+
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+    <!-- Google affiche le favicon des résultats de recherche en 48 px. -->
+    <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <!-- iOS ignore la transparence et la remplace par du noir : cette icône-ci
          a un fond opaque et une marge, parce qu'iOS arrondit lui-même les
          coins et rognerait un symbole collé au bord. -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="index, follow" />
-    <!-- Colore la barre d'adresse du navigateur mobile aux couleurs du site
-         plutôt que de laisser une bande blanche au-dessus d'une page sombre. -->
-    <meta name="theme-color" content="#141316" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#F7F6F8" media="(prefers-color-scheme: light)" />
+
+    <!-- Couleur de la barre d'adresse mobile. Une seule balise, sans
+         `media` : le thème suit le choix enregistré par le visiteur, pas le
+         réglage du système, donc une règle prefers-color-scheme afficherait
+         la mauvaise couleur à qui a basculé manuellement. La valeur est tenue
+         à jour par ThemeProvider et par le script ci-dessous. -->
+    <meta name="theme-color" content="#141316" />
+
+    <!-- Évite le clignotement de thème : <html> porte `dark` par défaut, donc
+         un visiteur ayant choisi le thème clair verrait la page apparaître en
+         sombre puis basculer une fois React monté. Ce script s'exécute avant
+         le premier rendu et corrige la classe et la couleur de barre
+         d'adresse. Il doit rester synchrone et en tête du <head>.
+         ATTENTION : son empreinte SHA-256 est inscrite dans la politique de
+         sécurité du contenu (vercel.json). Modifier ne serait-ce qu'un
+         caractère invalide l'empreinte — `npm run build` échoue alors avec la
+         nouvelle valeur à recopier. -->
+    <script>
+      try {
+        if (localStorage.getItem("darkMode") === "false") {
+          document.documentElement.classList.remove("dark");
+          document.querySelector('meta[name="theme-color"]').content = "#F7F6F8";
+        }
+      } catch (e) {}
+    </script>
+
     <title>Evoweb - Création de sites web sur mesure pour petites entreprises</title>
     <meta name="description" content="Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer.">
+    <meta name="robots" content="index, follow" />
+
     <meta property="og:title" content="Evoweb - Création de Sites Web Sur Mesure pour Petites Entreprises">
     <meta property="og:description" content="Je transforme vos idées en sites web modernes et personnalisés pour les petites entreprises, pour renforcer votre présence en ligne.">
     <!-- 1200 × 630 en PNG : le format qu'attendent Facebook, LinkedIn, X,
@@ -39,33 +65,61 @@
     <meta name="twitter:description" content="Je transforme vos idées en sites web modernes et personnalisés pour les petites entreprises, pour renforcer votre présence en ligne.">
     <meta name="twitter:image" content="https://www.evoweb.ca/og-image.png" />
     <meta name="twitter:image:alt" content="Evoweb — Créez votre site web personnalisé" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- Les polices sont auto-hébergées (voir src/index.css) : aucun
+         preconnect vers fonts.googleapis.com n'est nécessaire, et l'adresse IP
+         des visiteurs n'est plus transmise à un tiers. Les liens de préchargement
+         des deux polices critiques sont insérés au build par
+         scripts/build-html.mjs, qui seul connaît leur nom de fichier haché. -->
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "ProfessionalService",
-        "name": "Evoweb",
-        "url": "https://www.evoweb.ca/",
-        "image": "https://www.evoweb.ca/og-image.png",
-        "logo": "https://www.evoweb.ca/icon-512.png",
-        "description": "Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer.",
-        "areaServed": "QC",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Québec",
-          "addressRegion": "QC",
-          "addressCountry": "CA"
-        },
-        "founder": {
-          "@type": "Person",
-          "name": "Dereck Bélanger"
-        }
+        "@graph": [
+          {
+            "@type": "ProfessionalService",
+            "@id": "https://www.evoweb.ca/#business",
+            "name": "Evoweb",
+            "url": "https://www.evoweb.ca/",
+            "image": "https://www.evoweb.ca/og-image.png",
+            "logo": "https://www.evoweb.ca/icon-512.png",
+            "description": "Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer.",
+            "priceRange": "$$",
+            "currenciesAccepted": "CAD",
+            "paymentAccepted": "Virement Interac, Carte de crédit",
+            "knowsLanguage": "fr-CA",
+            "areaServed": {
+              "@type": "AdministrativeArea",
+              "name": "Québec"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Québec",
+              "addressRegion": "QC",
+              "addressCountry": "CA"
+            },
+            "founder": {
+              "@type": "Person",
+              "name": "Dereck Bélanger"
+            },
+            "sameAs": [
+              "https://github.com/DereckBelanger152",
+              "https://www.linkedin.com/in/dereck-bélanger-437259338/"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.evoweb.ca/#website",
+            "url": "https://www.evoweb.ca/",
+            "name": "Evoweb",
+            "inLanguage": "fr-CA",
+            "publisher": { "@id": "https://www.evoweb.ca/#business" }
+          }
+        ]
       }
     </script>
   </head>
-  
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

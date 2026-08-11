@@ -1,29 +1,149 @@
+/* Polices auto-hébergées plutôt que servies par fonts.googleapis.com.
+   Trois raisons : le navigateur n'a plus à ouvrir une connexion vers deux
+   domaines tiers avant de peindre le premier texte ; l'adresse IP de chaque
+   visiteur n'est plus transmise à Google, ce que la politique de
+   confidentialité promet ; et les fichiers sont servis depuis notre propre
+   domaine avec un cache d'un an (voir vercel.json).
+   Variantes `opsz` : ces polices ont un axe de taille optique qui ajuste le
+   dessin des lettres selon la taille de rendu — c'est ce que servait déjà
+   Google. La variante `wght` serait plus légère mais changerait l'allure du
+   titre principal. */
+@import "@fontsource-variable/bricolage-grotesque/opsz.css";
+@import "@fontsource-variable/dm-sans/opsz.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────────────────────────────────
+   Jetons de design — source unique de vérité pour la couleur.
+   Miroir de evoweb-ops/design/design-tokens-evoweb.md (Figma « Evoweb
+   design system » v1.0).
+
+   Les valeurs sont écrites en canaux RVB séparés, sans `rgb()`, pour que
+   Tailwind puisse y greffer une opacité : `rgb(var(--canvas) / <alpha-value>)`
+   dans tailwind.config.js rend `bg-canvas/95` possible. Un `#141316` ne le
+   permettrait pas.
+
+   Deux étages :
+   1. la palette brute, jamais utilisée directement dans le JSX ;
+   2. les jetons sémantiques, qui pointent vers la palette et basculent avec
+      la classe `.dark` posée sur <html>.
+
+   Ne pas écrire de valeur hexadécimale ailleurs dans src/. Les deux
+   exceptions sont public/404.html et api/contact.ts, deux fichiers servis
+   hors de l'application React qui ne peuvent rien importer d'ici.
+   ────────────────────────────────────────────────────────────────────── */
 @layer base {
-  html {
-    scroll-behavior: smooth;
+  :root {
+    --violet-50: 246 241 254;
+    --violet-400: 155 108 233;
+    --violet-600: 118 53 213;
+    --violet-900: 48 13 99;
+
+    --neutral-0: 255 255 255;
+    --neutral-50: 247 246 248;
+    --neutral-100: 239 238 242;
+    --neutral-200: 220 218 226;
+    --neutral-400: 156 151 170;
+    --neutral-600: 100 95 114;
+    --neutral-800: 49 46 56;
+    --neutral-850: 37 35 41;
+    --neutral-900: 27 26 30;
+    --neutral-925: 20 19 22;
+    --neutral-950: 9 9 11;
+
+    --success-300: 168 230 204;
+    --success-700: 29 114 79;
+    --danger-300: 247 161 166;
+    --danger-700: 182 32 42;
+    --warning-300: 247 216 161;
+    --warning-700: 179 119 15;
+
+    /* Sémantique — thème clair */
+    --canvas: var(--neutral-50);
+    --surface: var(--neutral-0);
+    --fg: var(--neutral-900);
+    --muted: var(--neutral-600);
+    --line: var(--neutral-200);
+    --accent: var(--violet-600);
+    --accent-subtle: var(--violet-50);
+    --success: var(--success-700);
+    --danger: var(--danger-700);
+    --warning: var(--warning-700);
+
+    /* Identiques dans les deux thèmes : le pied de page est un puits sombre
+       même en thème clair, et le violet 600 est le seul violet sur lequel du
+       blanc atteint 4,5:1 — il ne peut donc pas s'éclaircir en thème sombre
+       sans rendre le texte des boutons illisible. */
+    --sunken: var(--neutral-950);
+    --line-sunken: var(--neutral-850);
+    --on-sunken: var(--neutral-100);
+    --muted-sunken: var(--neutral-400);
+    --accent-sunken: var(--violet-400);
+    --brand: var(--violet-600);
+    --on-brand: var(--neutral-0);
   }
 
-  html, body {
+  .dark {
+    --canvas: var(--neutral-925);
+    --surface: var(--neutral-900);
+    --fg: var(--neutral-100);
+    --muted: var(--neutral-400);
+    --line: var(--neutral-800);
+    --accent: var(--violet-400);
+    --accent-subtle: var(--violet-900);
+    --success: var(--success-300);
+    --danger: var(--danger-300);
+    --warning: var(--warning-300);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Décale la cible des liens d'ancrage sous l'en-tête fixe (bandeau
+       d'annonce + navigation), sinon le titre de la section visée se retrouve
+       caché dessous. S'applique aussi à scrollIntoView(). */
+    scroll-padding-top: 7rem;
+  }
+
+  /* `clip` plutôt que `hidden` : `hidden` fait de <html> un conteneur de
+     défilement, ce qui casse position:sticky et le défilement fluide sur
+     certains navigateurs. `clip` coupe le débordement sans rien de tout ça. */
+  html,
+  body {
     overflow-x: hidden;
   }
 
+  @supports (overflow: clip) {
+    html,
+    body {
+      overflow-x: clip;
+    }
+  }
+
   body {
-    font-family: "DM Sans", system-ui, sans-serif;
-    /* color/text/primary + color/bg/canvas (dark) */
-    @apply text-[#EFEEF2] antialiased bg-[#141316];
+    font-family: "DM Sans Variable", system-ui, sans-serif;
+    @apply bg-canvas text-fg antialiased;
   }
 
-  html:not(.dark) body {
-    /* color/text/primary + color/bg/canvas (light) */
-    @apply text-[#1B1A1E] bg-[#F7F6F8];
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Bricolage Grotesque Variable", system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  /* Anneau de focus unique pour tout le site. Sans cela, un visiteur qui
+     navigue au clavier perd la trace de sa position : l'anneau par défaut du
+     navigateur est presque invisible sur fond sombre. `:focus-visible` ne se
+     déclenche pas au clic à la souris, donc le design n'en souffre pas. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
   }
 }
 
@@ -32,21 +152,16 @@
     @apply max-w-7xl mx-auto;
   }
 
-  /* Section eyebrow label — color/text/muted */
+  /* Étiquette de section (« — Services ») */
   .label {
-    font-family: "DM Sans", system-ui, sans-serif;
-    @apply text-xs font-medium uppercase tracking-[0.18em] text-[#645F72] dark:text-[#9C97AA];
-  }
-
-  /* Flat bordered card — color/border/default + color/bg/surface */
-  .card {
-    @apply border border-[#DCDAE2] dark:border-[#312E38] bg-[#FFFFFF] dark:bg-[#1B1A1E];
+    @apply font-body text-xs font-medium uppercase tracking-[0.18em] text-muted;
   }
 }
 
-/* Subtle noise grain overlay */
+/* Grain discret par-dessus toute la page. `pointer-events: none` pour ne
+   jamais intercepter un clic. */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -57,10 +172,16 @@ body::before {
   background-size: 128px 128px;
 }
 
-/* Marquee animation for tech strip */
+/* Bandeau des technologies. La liste est dupliquée dans le JSX : le défilement
+   s'arrête à -50%, soit exactement la fin de la première copie, ce qui rend la
+   boucle invisible. */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-marquee {
@@ -72,12 +193,12 @@ body::before {
   animation-play-state: paused;
 }
 
-/* Respect de « Réduire les animations » (système d'exploitation). Sans cela,
-   le bandeau technos défile indéfiniment et les apparitions au scroll
-   déclenchent nausées et migraines chez les personnes sensibles au
-   mouvement — c'est le critère WCAG 2.3.3. Les animations pilotées par
-   Framer Motion sont en JavaScript et ignorent cette règle CSS : elles sont
-   neutralisées par <MotionConfig reducedMotion="user"> dans main.tsx. */
+/* Respect de « Réduire les animations » (système d'exploitation) — critère
+   WCAG 2.3.3. Sans cela, le bandeau défile sans fin et les apparitions au
+   défilement déclenchent nausées et migraines chez les personnes sensibles au
+   mouvement. Les animations pilotées par Framer Motion sont en JavaScript et
+   ignorent cette règle CSS : elles sont neutralisées par
+   <MotionConfig reducedMotion="user"> dans main.tsx. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
