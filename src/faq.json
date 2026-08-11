@@ -17,7 +17,7 @@
   },
   {
     "q": "Y a-t-il des frais cachés ou un abonnement obligatoire ?",
-    "a": "Non. Le seul montant qui revient chaque année est votre nom de domaine (environ 25 $), payé directement au fournisseur. L'hébergement est inclus, sans abonnement. L'entretien mensuel est optionnel : si vous ne le prenez pas, le site continue de fonctionner pareil."
+    "a": "Non. Le seul montant qui revient chaque année est votre nom de domaine (environ 25 $), payé directement au fournisseur. Si vous voulez une vraie boîte courriel à votre domaine plutôt qu'une redirection gratuite, comptez environ 11 $/mois par boîte pour Google Workspace, mais rien n'est ajouté sans votre accord. L'hébergement est inclus, sans abonnement. L'entretien mensuel est optionnel : si vous ne le prenez pas, le site continue de fonctionner pareil."
   },
   {
     "q": "Pourquoi c'est moins cher qu'une agence ?",
@@ -41,6 +41,6 @@
   },
   {
     "q": "Comment je paie, et est-ce sécuritaire ?",
-    "a": "En trois versements liés à ce que vous voyez : 40 % à la signature, 30 % quand vous approuvez le design fini, 30 % avant que le site devienne public. Par virement Interac (aucuns frais) ou par carte via une facture Stripe sécurisée (des frais de 2,9 % + 0,30 $ s'appliquent si vous choisissez cette option). Je ne vois et ne conserve jamais votre numéro de carte."
+    "a": "En trois versements liés à ce que vous voyez : 40 % à la signature, 30 % quand vous approuvez le design fini, 30 % avant que le site devienne public. Par virement Interac ou par carte via une facture Stripe sécurisée, sans frais supplémentaire dans les deux cas. Je ne vois et ne conserve jamais votre numéro de carte."
   }
 ]

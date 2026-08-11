@@ -89,7 +89,7 @@ const PAYMENT_SCHEDULE = [
 ];
 
 const CONTACT_POINTS = [
-  "Réponse sous 24h",
+  "Réponse sous 2 jours ouvrables",
   "Devis gratuit et sans engagement",
   "Disponible pour des projets au Québec et partout ailleurs",
 ];
@@ -496,8 +496,11 @@ export default function App() {
                 </div>
                 <p className="text-xs mt-6 leading-relaxed text-muted">
                   Aucune taxe applicable. Le seul frais qui s'ajoute est votre nom de domaine,
-                  environ 25 $ par année, payé directement à votre fournisseur et à votre nom.
-                  L'hébergement est inclus et il n'y a aucun abonnement obligatoire.
+                  environ 25 $ par année, payé directement à votre fournisseur et à votre nom. Si
+                  vous voulez une vraie boîte courriel à votre domaine plutôt qu'une redirection
+                  gratuite, comptez environ 11 $/mois par boîte pour Google Workspace, mais rien
+                  n'est ajouté sans votre accord. L'hébergement est inclus et il n'y a aucun
+                  abonnement obligatoire.
                 </p>
               </div>
 

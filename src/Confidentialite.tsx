@@ -52,7 +52,7 @@ const SECTIONS: Section[] = [
   {
     title: "Comment ils sont protégés",
     body: [
-      "L'accès est limité à la seule personne responsable. Les comptes sont protégés par une authentification à deux facteurs et le site est servi en HTTPS.",
+      "L'accès est limité à la seule personne responsable. Le site est servi en HTTPS.",
       "Aucun renseignement bancaire ni de carte de crédit n'est conservé par Evoweb. Les paiements par carte sont traités directement par Stripe.",
     ],
   },

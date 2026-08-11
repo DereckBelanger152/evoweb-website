@@ -77,7 +77,7 @@ const ALWAYS_INCLUDED = [
   "Liens vers vos réseaux sociaux, si vous en avez",
   "Favicon à vos couleurs",
   "Politique de confidentialité et mention légale (Loi 25)",
-  "Site en français (Loi 101)",
+  "Site en français (Loi 96)",
   "Hébergement inclus, aucune taxe ajoutée à la facture",
 ];
 
@@ -85,6 +85,7 @@ const OWNERSHIP = [
   { service: "Nom de domaine (.ca / .com)", owner: "Vous, à la dénomination légale de votre entreprise", payer: "Votre carte", cost: "~20-25 $ / an" },
   { service: "Hébergement du site", owner: "Evoweb", payer: "Personne (inclus)", cost: "0 $" },
   { service: "Fiche Google Business", owner: "Vous", payer: "Personne (inclus)", cost: "0 $" },
+  { service: "Courriel Google Workspace (optionnel)", owner: "Vous", payer: "Votre carte", cost: "~11 $ / mois / boîte" },
 ];
 
 const MAINTENANCE = {
@@ -166,7 +167,7 @@ const TRUST = [
   {
     Icon: Receipt,
     title: "Aucune taxe, aucun montant surprise",
-    desc: "Comme petit fournisseur, je ne charge ni TPS ni TVQ. C'est écrit sur chaque facture. Le seul montant qui revient chaque année est votre nom de domaine, payé directement au fournisseur, jamais à moi.",
+    desc: "Comme petit fournisseur, je ne charge ni TPS ni TVQ. C'est écrit sur chaque facture. Le seul montant qui revient chaque année est votre nom de domaine, payé directement au fournisseur, jamais à moi. Si vous ajoutez une boîte courriel Google Workspace, comptez environ 11 $/mois de plus, mais rien n'est ajouté sans votre accord.",
   },
   {
     Icon: Camera,

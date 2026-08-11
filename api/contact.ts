@@ -178,7 +178,7 @@ function buildAutoReply(greeting: string) {
   const text = [
     hello,
     "",
-    "Merci de m'avoir écrit. J'ai bien reçu votre message et je vous reviens d'ici 24 heures.",
+    "Merci de m'avoir écrit. J'ai bien reçu votre message et je vous reviens sous 2 jours ouvrables.",
     "",
     "J'apprécie votre confiance, et je suis impatient de vous aider.",
     "",
@@ -193,7 +193,7 @@ function buildAutoReply(greeting: string) {
   <tr>
     <td style="padding:24px;font-family:${FONT_STACK};font-size:15px;line-height:1.6;color:#2b2733;">
       <p style="margin:0 0 16px;">${hello}</p>
-      <p style="margin:0 0 16px;">Merci de m'avoir écrit. J'ai bien reçu votre message et je vous reviens d'ici 24 heures.</p>
+      <p style="margin:0 0 16px;">Merci de m'avoir écrit. J'ai bien reçu votre message et je vous reviens sous 2 jours ouvrables.</p>
       <p style="margin:0 0 16px;">J'apprécie votre confiance, et je suis impatient de vous aider.</p>
       <p style="margin:0 0 20px;">À bientôt,</p>
       <table role="presentation" cellpadding="0" cellspacing="0" border="0">
