@@ -19,8 +19,7 @@
 
 /* ──────────────────────────────────────────────────────────────────────
    Jetons de design — source unique de vérité pour la couleur.
-   Miroir de evoweb-ops/design/design-tokens-evoweb.md (Figma « Evoweb
-   design system » v1.0).
+   Miroir de Figma « Evoweb design system », la source visuelle de vérité.
 
    Les valeurs sont écrites en canaux RVB séparés, sans `rgb()`, pour que
    Tailwind puisse y greffer une opacité : `rgb(var(--canvas) / <alpha-value>)`

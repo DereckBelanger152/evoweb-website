@@ -21,8 +21,8 @@ import { useSEO } from "./useSEO";
 
 // Contenu propre à cette page — pas des données de tarification, donc pas dans
 // pricingData.ts. Traduit les features brutes de chaque forfait en résultats
-// concrets, à la manière du devis (voir evoweb-ops/playbook/05-devis-contrat.md
-// : « traduire ce qu'il t'a dit à l'appel »).
+// concrets, à la manière du devis (voir evoweb-ops/CLIENT.md, étape 4 :
+// « reprendre les mots du client »).
 //
 // La FAQ, elle, vit dans src/faq.json : scripts/build-html.mjs la relit au
 // build pour en produire les données structurées FAQPage que Google utilise

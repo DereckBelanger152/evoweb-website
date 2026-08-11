@@ -2,7 +2,7 @@
 // App.tsx (page d'accueil) et Forfaits.tsx (page de détail /forfaits).
 // Ne pas dupliquer ces tableaux ailleurs : c'est exactement le genre de copie
 // qui a fait dériver les tokens de couleur avant qu'ils soient centralisés
-// dans tokens.ts (voir evoweb-ops/design/design-tokens-evoweb.md).
+// dans tokens.ts. Figma « Evoweb design system » reste la source visuelle.
 
 export type PricingTier = {
   slug: string;
