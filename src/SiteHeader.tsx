@@ -66,24 +66,34 @@ export default function SiteHeader(props: Props) {
   // défilement sur mobile. L'observateur, lui, ne rappelle qu'au franchissement.
   //
   // rootMargin réduit la zone d'observation à une bande horizontale entre 100 px
-  // (juste sous l'en-tête fixe) et 40 % de la hauteur de l'écran : une seule
-  // section s'y trouve à la fois.
+  // (juste sous l'en-tête fixe) et 40 % de la hauteur de l'écran.
+  //
+  // On tient à jour l'ensemble des sections présentes dans cette bande, puis on
+  // retient la première dans l'ordre du document. Se contenter de la dernière
+  // entrée reçue serait fragile : l'observateur ne rappelle qu'avec les sections
+  // dont la visibilité a changé, et rien ne garantit leur ordre dans le tableau.
   useEffect(() => {
     if (!isHome) return;
 
-    const sections = NAV_LINKS.map(([id]) => document.getElementById(id)).filter(
-      (el): el is HTMLElement => el !== null,
-    );
+    const ids = NAV_LINKS.map(([id]) => id);
+    const inBand = new Set<string>();
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries.filter((entry) => entry.isIntersecting).pop();
-        if (visible) setActiveSection(visible.target.id);
+        for (const entry of entries) {
+          if (entry.isIntersecting) inBand.add(entry.target.id);
+          else inBand.delete(entry.target.id);
+        }
+        const current = ids.find((id) => inBand.has(id));
+        if (current) setActiveSection(current);
       },
       { rootMargin: "-100px 0px -60% 0px" },
     );
 
-    sections.forEach((section) => observer.observe(section));
+    for (const id of ids) {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    }
     return () => observer.disconnect();
   }, [isHome]);
 
