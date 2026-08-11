@@ -3,7 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="canonical" href="https://www.evoweb.ca/" />
-    <link rel="icon" href="/logo.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+    <!-- iOS ignore la transparence et la remplace par du noir : cette icône-ci
+         a un fond opaque et une marge, parce qu'iOS arrondit lui-même les
+         coins et rognerait un symbole collé au bord. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="index, follow" />
     <!-- Colore la barre d'adresse du navigateur mobile aux couleurs du site
@@ -14,23 +21,24 @@
     <meta name="description" content="Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer.">
     <meta property="og:title" content="Evoweb - Création de Sites Web Sur Mesure pour Petites Entreprises">
     <meta property="og:description" content="Je transforme vos idées en sites web modernes et personnalisés pour les petites entreprises, pour renforcer votre présence en ligne.">
-    <!-- À REMPLACER AVANT L'ANNONCE : image d'aperçu de 1200 × 630 px en PNG
-         ou JPG. Le logo carré de 256 px ci-dessous force les réseaux à
-         afficher une vignette minuscule à côté du lien. Une fois le fichier
-         déposé dans public/og-image.png, mettre à jour les quatre balises
-         og:image* et passer twitter:card à « summary_large_image ». -->
-    <meta property="og:image" content="https://www.evoweb.ca/logo-evoweb.webp" />
-    <meta property="og:image:width" content="256" />
-    <meta property="og:image:height" content="256" />
-    <meta property="og:image:alt" content="Evoweb — création de sites web sur mesure" />
+    <!-- 1200 × 630 en PNG : le format qu'attendent Facebook, LinkedIn, X,
+         Slack et iMessage pour afficher une grande bannière plutôt qu'une
+         vignette. Pas de WebP ici — LinkedIn ne le lit pas de façon fiable.
+         Source : Figma « Evoweb design system » > Foundations / Logo. -->
+    <meta property="og:image" content="https://www.evoweb.ca/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="Evoweb — Créez votre site web personnalisé" />
     <meta property="og:url" content="https://www.evoweb.ca/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_CA" />
     <meta property="og:site_name" content="Evoweb" />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Evoweb - Création de Sites Web Sur Mesure pour Petites Entreprises">
     <meta name="twitter:description" content="Je transforme vos idées en sites web modernes et personnalisés pour les petites entreprises, pour renforcer votre présence en ligne.">
-    <meta name="twitter:image" content="https://www.evoweb.ca/logo-evoweb.webp" />
+    <meta name="twitter:image" content="https://www.evoweb.ca/og-image.png" />
+    <meta name="twitter:image:alt" content="Evoweb — Créez votre site web personnalisé" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -40,7 +48,8 @@
         "@type": "ProfessionalService",
         "name": "Evoweb",
         "url": "https://www.evoweb.ca/",
-        "image": "https://www.evoweb.ca/logo-evoweb.webp",
+        "image": "https://www.evoweb.ca/og-image.png",
+        "logo": "https://www.evoweb.ca/icon-512.png",
         "description": "Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer.",
         "areaServed": "QC",
         "address": {
