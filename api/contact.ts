@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { LEGAL } from "../src/legal";
 
 // Livraison via l'API HTTP de Resend plutôt que par SMTP. Deux raisons :
 //   1. Une fonction serverless dispose d'environ 10 s pour répondre, et une
@@ -24,6 +25,15 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 //   CONTACT_TO_EMAIL    boîte qui reçoit les notifications de leads.
 
 const LIMITS = { name: 120, email: 200, message: 5000 };
+
+// Le logo de la signature est servi par le site lui-même : un courriel ne
+// peut pas embarquer d'image locale, et le PNG passe partout alors que le
+// WebP du site ne s'affiche pas dans Outlook. Voir public/logo-email.png.
+const SITE_URL = "https://www.evoweb.ca";
+const LOGO_URL = `${SITE_URL}/logo-email.png`;
+const BRAND_PURPLE = "#7635D5";
+const FONT_STACK =
+  "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
 
 // Fenêtre glissante par IP. Le Map vit dans l'instance de fonction : il ne
 // couvre pas toutes les instances simultanées, mais il coupe les rafales
@@ -86,11 +96,71 @@ function safeGreetingName(value: string) {
   return firstWord.replace(/[^\p{L}'-]/gu, "").slice(0, 40);
 }
 
+function formatPhone(digits: string) {
+  return `${digits.slice(0, 3)} ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+// Accusé de réception, en HTML et en texte brut. Les deux versions partent
+// ensemble : le client d'un destinataire choisit celle qu'il sait afficher,
+// et un message qui offre les deux passe mieux les filtres antipourriel
+// qu'un message uniquement HTML.
+//
+// Mise en page en tableaux et styles en attribut `style` : c'est ce que
+// comprennent les clients de messagerie, dont Outlook, qui ignore une bonne
+// part du CSS moderne et les feuilles de style externes.
+//
+// `greeting` traverse déjà safeGreetingName, qui ne laisse passer que des
+// lettres : aucun caractère capable d'ouvrir une balise ne peut donc
+// atteindre le HTML ci-dessous.
+function buildAutoReply(greeting: string) {
+  const hello = `Bonjour${greeting ? ` ${greeting}` : ""}!`;
+  const phone = formatPhone(LEGAL.phone);
+
+  const text = [
+    hello,
+    "",
+    "Merci de m'avoir écrit. J'ai bien reçu votre message et je vous reviens d'ici 24 heures.",
+    "",
+    `J'apprécie votre confiance, et je suis impatient de vous aider.`,
+    "",
+    "À bientôt,",
+    "",
+    LEGAL.name,
+    "Evoweb",
+    SITE_URL.replace("https://", ""),
+  ].join("\n");
+
+  const html = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;">
+  <tr>
+    <td style="padding:24px;font-family:${FONT_STACK};font-size:15px;line-height:1.6;color:#2b2733;">
+      <p style="margin:0 0 16px;">${hello}</p>
+      <p style="margin:0 0 16px;">Merci de m'avoir écrit. J'ai bien reçu votre message et je vous reviens d'ici 24 heures.</p>
+      <p style="margin:0 0 24px;">Si c'est pressant, appelez-moi au <a href="tel:+1${LEGAL.phone}" style="color:${BRAND_PURPLE};text-decoration:none;">${phone}</a>.</p>
+      <p style="margin:0 0 20px;">À bientôt,</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td style="padding-right:12px;vertical-align:middle;">
+            <img src="${LOGO_URL}" width="40" height="40" alt="Evoweb" style="display:block;border:0;width:40px;height:40px;">
+          </td>
+          <td style="vertical-align:middle;font-family:${FONT_STACK};font-size:14px;line-height:1.45;color:#2b2733;">
+            <strong>${LEGAL.name}</strong><br>
+            <a href="${SITE_URL}" style="color:${BRAND_PURPLE};text-decoration:none;">${SITE_URL.replace("https://", "")}</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>`;
+
+  return { text, html };
+}
+
 type Mail = {
   from: string;
   to: string;
   subject: string;
   text: string;
+  html?: string;
   reply_to?: string;
 };
 
@@ -188,7 +258,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // L'accusé de réception est secondaire : la notification est déjà partie,
   // on ne fait pas échouer la requête et on ne laisse pas le visiteur croire
   // que son message s'est perdu.
-  const greeting = safeGreetingName(leadName);
+  const autoReply = buildAutoReply(safeGreetingName(leadName));
 
   try {
     await send(
@@ -196,8 +266,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         from: `Evoweb <${fromAddress}>`,
         to: leadEmail,
         reply_to: fromAddress,
-        subject: "Message bien reçu — Evoweb",
-        text: `Bonjour${greeting ? ` ${greeting}` : ""},\n\nVotre message a bien été reçu, merci pour votre confiance ! Je vous réponds sous 24h.\n\n— Dereck, Evoweb`,
+        subject: "Merci pour votre message",
+        text: autoReply.text,
+        html: autoReply.html,
       },
       apiKey,
     );
