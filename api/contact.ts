@@ -71,11 +71,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Message principal, reçu dans la boîte de l'entreprise. Le
     // répondre-à pointe vers le visiteur pour pouvoir lui répondre
     // directement depuis Gmail.
+    // L'heure dans le sujet garantit un sujet unique par soumission : Gmail
+    // regroupe les messages par sujet identique en une seule conversation,
+    // ce qui mélangerait plusieurs demandes distinctes de la même personne.
+    const receivedAt = new Date().toLocaleString("fr-CA", {
+      timeZone: "America/Toronto",
+      dateStyle: "short",
+      timeStyle: "medium",
+    });
     await transporter.sendMail({
       from: `Evoweb — Formulaire de contact <${publicAddress}>`,
       to: publicAddress,
       replyTo: email.trim(),
-      subject: `Nouveau message de ${name.trim()} via evoweb.ca`,
+      subject: `Nouveau message de ${name.trim()} via evoweb.ca (${receivedAt})`,
       text: `Nom : ${name.trim()}\nCourriel : ${email.trim()}\n\n${message.trim()}`,
     });
   } catch (error) {
