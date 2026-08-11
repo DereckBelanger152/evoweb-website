@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr-CA">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page introuvable — Evoweb</title>
+    <!-- Une page d'erreur ne doit jamais être indexée : elle n'a pas de
+         contenu propre et diluerait les résultats du site. -->
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" href="/logo.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=DM+Sans:opsz,wght@9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Page autonome : servie directement par Vercel pour toute route
+         inconnue, donc sans React ni feuille de style de l'application.
+         Les couleurs sont recopiées de src/tokens.ts (thème sombre). */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: #141316;
+        color: #efeef2;
+        font-family: "DM Sans", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      main { max-width: 34rem; width: 100%; }
+      .code {
+        font-family: "Bricolage Grotesque", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: clamp(4.5rem, 18vw, 9rem);
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+        color: #9b6ce9;
+        margin-bottom: 1.5rem;
+      }
+      h1 {
+        font-family: "Bricolage Grotesque", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        line-height: 1.1;
+        margin-bottom: 1rem;
+      }
+      p { color: #9c97aa; line-height: 1.6; margin-bottom: 2rem; }
+      .actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+      a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+      a:hover { opacity: 0.85; }
+      a:focus-visible { outline: 2px solid #9b6ce9; outline-offset: 3px; }
+      .primary { background: #7635d5; color: #fff; }
+      .secondary { border: 1px solid #312e38; color: #efeef2; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="code">404</div>
+      <h1>Cette page n'existe pas.</h1>
+      <p>
+        Le lien est peut-être brisé, ou la page a changé d'adresse. Revenez à
+        l'accueil, ou écrivez-moi et je vous oriente.
+      </p>
+      <div class="actions">
+        <a class="primary" href="/">Retour à l'accueil</a>
+        <a class="secondary" href="/#contact">Me contacter</a>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,5 +1,18 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { LEGAL } from "../src/legal";
+
+// Ces deux valeurs sont volontairement recopiées de src/legal.ts au lieu
+// d'être importées. Le paquet est en `"type": "module"`, donc le .js produit
+// par Vercel est chargé comme un module ESM, et ESM exige une extension
+// explicite sur les imports relatifs : `../src/legal` reste tel quel dans le
+// contact.js déployé et Node échoue avec ERR_MODULE_NOT_FOUND — la fonction
+// plante au chargement et TOUTE soumission du formulaire retourne 500.
+// Une fonction serverless doit donc rester autonome : aucun import hors de
+// api/. Si le nom ou le téléphone change, les mettre à jour ici ET dans
+// src/legal.ts.
+const LEGAL = {
+  name: "Dereck Bélanger",
+  phone: "5813086181",
+} as const;
 
 // Livraison via l'API HTTP de Resend plutôt que par SMTP. Deux raisons :
 //   1. Une fonction serverless dispose d'environ 10 s pour répondre, et une

@@ -78,15 +78,23 @@ export default function SiteHeader(props: Props) {
           className="fixed top-0 left-0 right-0 z-[100] h-9 flex items-center justify-between px-4 sm:px-6"
           style={{ background: T.accent }}
         >
-          <p className="text-white text-xs sm:text-sm font-medium truncate pr-4">
-            Pas encore de site web ? Je vous prépare une maquette gratuite, sans engagement.{" "}
-            <button
-              onClick={() => goTo("processus")}
-              className="underline underline-offset-2 hover:opacity-80"
-            >
-              Voir comment ça marche →
-            </button>
-          </p>
+          {/* Le bandeau entier est cliquable. Auparavant, le texte long et le
+              lien vivaient dans un <p class="truncate"> : sur mobile, le
+              « … » coupait précisément le lien, donc l'appel à l'action du
+              bandeau était invisible là où passe la majorité du trafic. Le
+              texte court en dessous de sm tient sans troncature. */}
+          <button
+            onClick={() => goTo("processus")}
+            className="flex-1 min-w-0 text-left text-white text-xs sm:text-sm font-medium truncate pr-4 hover:opacity-90 transition-opacity"
+          >
+            <span className="sm:hidden">Maquette gratuite, sans engagement</span>
+            <span className="hidden sm:inline">
+              Pas encore de site web ? Je vous prépare une maquette gratuite, sans engagement.
+            </span>{" "}
+            <span className="underline underline-offset-2">
+              <span className="hidden sm:inline">Voir comment ça marche </span>→
+            </span>
+          </button>
           <button
             onClick={() => setShowPopup(false)}
             className="flex-shrink-0 text-white/80 hover:text-white transition-opacity ml-4"

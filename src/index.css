@@ -67,6 +67,28 @@ body::before {
   animation: marquee 28s linear infinite;
 }
 
-.animate-marquee:hover {
+.animate-marquee:hover,
+.animate-marquee:focus-within {
   animation-play-state: paused;
+}
+
+/* Respect de « Réduire les animations » (système d'exploitation). Sans cela,
+   le bandeau technos défile indéfiniment et les apparitions au scroll
+   déclenchent nausées et migraines chez les personnes sensibles au
+   mouvement — c'est le critère WCAG 2.3.3. Les animations pilotées par
+   Framer Motion sont en JavaScript et ignorent cette règle CSS : elles sont
+   neutralisées par <MotionConfig reducedMotion="user"> dans main.tsx. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -269,11 +269,7 @@ export default function Forfaits() {
   const { isDark } = useTheme();
   const T = tokensFor(isDark);
 
-  useSEO({
-    title: "Forfaits en détail : Evoweb",
-    description: "Le détail complet des 3 forfaits Evoweb : ce qui est inclus, les extras, le paiement en trois versements et les questions les plus fréquentes.",
-    path: "/forfaits",
-  });
+  useSEO("/forfaits");
 
   const bg = T.canvas;
   const text = T.textPrimary;

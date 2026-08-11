@@ -33,7 +33,11 @@ export function tokensFor(isDark: boolean) {
     textMuted: pick(neutral[400], neutral[600]),
     onAccent: neutral[0],
     onSunken: neutral[100],
-    mutedOnSunken: neutral[700],
+    // neutral[700] sur `sunken` (#09090B) ne donnait que 2,24:1 — sous le
+    // 4,5:1 exigé par WCAG AA. C'est le texte du pied de page : NEQ, adresse
+    // courriel et lien vers la politique de confidentialité, soit les
+    // mentions exigées par la Loi 25. Elles doivent être lisibles.
+    mutedOnSunken: neutral[400],
     textAccent: pick(violet[400], violet[600]),
 
     borderDefault: pick(neutral[800], neutral[200]),

@@ -85,11 +85,7 @@ export default function Confidentialite() {
   const { isDark } = useTheme();
   const T = tokensFor(isDark);
 
-  useSEO({
-    title: "Politique de confidentialité : Evoweb",
-    description: "Politique de confidentialité d'Evoweb : quels renseignements personnels sont recueillis, pourquoi, et comment les faire retirer ou corriger.",
-    path: "/confidentialite",
-  });
+  useSEO("/confidentialite");
   const bg = T.canvas;
   const text = T.textPrimary;
   const muted = T.textMuted;

@@ -4,7 +4,6 @@ import ContactForm from "./ContactForm";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import { motion } from "framer-motion";
-import { Analytics } from "@vercel/analytics/react";
 import { tokensFor } from "./tokens";
 import { PRICING, ADDONS, PROCESS } from "./pricingData";
 import { useSEO } from "./useSEO";
@@ -42,18 +41,14 @@ function TechMarquee({ isDark }: { isDark: boolean }) {
 export default function App() {
   const { isDark } = useTheme();
 
-  useSEO({
-    title: "Evoweb - Création de sites web sur mesure pour petites entreprises",
-    description: "Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer.",
-    path: "/",
-  });
+  useSEO("/");
 
   const projects = [
     {
       title: "Club IA Université Laval",
       description:
         "Site web pour le club d'Intelligence Artificielle de l'Université Laval. Moyenne de 230 visites/mois, >97% de performance desktop/mobile en continu",
-      image: "site-cia.webp",
+      image: "/site-cia.webp",
       alt: "Site web pour club Intelligence Artificielle de mon université",
       tech: ["TypeScript", "Tailwind CSS", "Firebase", "i18n"],
       link: "https://cia.ift.ulaval.ca",
@@ -62,7 +57,7 @@ export default function App() {
       title: "Site personnel",
       description:
         "Mon propre terrain de jeu : chaque nouvelle techno que j'apprends atterrit ici en premier. C'est ce site qui m'a permis de décrocher mes tout premiers clients.",
-      image: "site-portfolio.webp",
+      image: "/site-portfolio.webp",
       alt: "Site web portfolio personnel",
       tech: ["TypeScript", "Tailwind CSS", "Framer Motion"],
       link: "https://www.dereckbelanger.me",
@@ -71,7 +66,7 @@ export default function App() {
       title: "Lavage à pression provincial",
       description:
         "Client comblé, site livré: cette entreprise de lavage à pression a enfin une présence web à la hauteur de sa réputation sur le terrain.",
-      image: "site-lavagepression.webp",
+      image: "/site-lavagepression.webp",
       alt: "Site web pour lavage à pression provincial",
       tech: ["TypeScript", "Tailwind CSS", "Framer Motion"],
       link: "https://www.lavageapressionprovincial.com",
@@ -80,7 +75,7 @@ export default function App() {
       title: "Café",
       description:
         "Site web fictif pour un café. Il est entièrement responsive et optimisé pour la performance.",
-      image: "site-cafe.webp",
+      image: "/site-cafe.webp",
       alt: "Site web pour un café fictif",
       tech: ["TypeScript", "Tailwind CSS", "JavaScript"],
       link: "https://coffeeshop-website-nine.vercel.app",
@@ -104,8 +99,6 @@ export default function App() {
       className="min-h-screen overflow-x-hidden font-body transition-colors duration-300"
       style={{ background: bg, color: text }}
     >
-      <Analytics />
-
       <SiteHeader variant="home" onNavigate={scrollToSection} />
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
@@ -191,7 +184,7 @@ export default function App() {
             <div className="w-full md:w-5/12 flex-shrink-0">
               <div className="overflow-hidden" style={{ border: `1px solid ${border}` }}>
                 <img
-                  src="photo-dereck.webp"
+                  src="/photo-dereck.webp"
                   alt="Dereck Bélanger, fondateur Evoweb"
                   width={1200}
                   height={1600}
@@ -213,7 +206,7 @@ export default function App() {
                 Bonjour! Je suis Dereck, étudiant en informatique à l'Université Laval
                 et développeur web passionné. Je combine créativité et expertise technique
                 pour créer des expériences web qui satisfont vos besoins.
-                C'est moi s'occuperai de vous!
+                C'est moi qui m'occuperai de vous!
               </p>
               <div className="space-y-3 pt-2">
                 {[

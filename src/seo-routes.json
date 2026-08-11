@@ -1,0 +1,14 @@
+{
+  "/": {
+    "title": "Evoweb - Création de sites web sur mesure pour petites entreprises",
+    "description": "Evoweb crée des sites web modernes et personnalisés pour les petites entreprises, à prix fixe et sans agence à payer."
+  },
+  "/forfaits": {
+    "title": "Forfaits en détail : Evoweb",
+    "description": "Le détail complet des 3 forfaits Evoweb : ce qui est inclus, les extras, le paiement en trois versements et les questions les plus fréquentes."
+  },
+  "/confidentialite": {
+    "title": "Politique de confidentialité : Evoweb",
+    "description": "Politique de confidentialité d'Evoweb : quels renseignements personnels sont recueillis, pourquoi, et comment les faire retirer ou corriger."
+  }
+}

@@ -1,5 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Analytics } from '@vercel/analytics/react';
+import { MotionConfig } from 'framer-motion';
 import App from './App.tsx';
 import Confidentialite from './Confidentialite.tsx';
 import Forfaits from './Forfaits.tsx';
@@ -17,10 +19,16 @@ const page =
   path === '/forfaits'        ? <Forfaits /> :
   <App />;
 
+// <Analytics /> est monté ici plutôt que dans App : placé dans App, il ne se
+// chargeait que sur l'accueil, et /forfaits — la page qui décide d'un achat —
+// n'était mesurée nulle part.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
-      {page}
-    </ThemeProvider>
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
+        {page}
+        <Analytics />
+      </ThemeProvider>
+    </MotionConfig>
   </StrictMode>
 );
