@@ -39,8 +39,19 @@ const LIMITS = { name: 120, email: 200, message: 5000 };
 // Le logo de la signature est servi par le site lui-même : un courriel ne peut
 // pas embarquer d'image locale, et le PNG passe partout alors que le WebP du
 // site ne s'affiche pas dans Outlook. Voir public/logo-email.png.
+//
+// Son fond doit rester transparent : la signature se pose sur le blanc de la
+// boîte de réception, et un fond opaque y dessine une tuile sombre autour du
+// symbole. Le creux du « e » est lui aussi transparent — c'est ce qui rend le
+// symbole lisible aussi bien sur clair que sur sombre.
+//
+// Le `?v=` sert à forcer le rafraîchissement : Gmail ne charge pas l'image
+// depuis evoweb.ca, il la relaie par son propre cache (googleusercontent.com),
+// qui la garde longtemps et la partage entre tous les destinataires. Sans
+// changement d'URL, remplacer le fichier ne suffit pas — l'ancienne version
+// continue d'être servie. Incrémenter à chaque nouvelle version du logo.
 const SITE_URL = "https://www.evoweb.ca";
-const LOGO_URL = `${SITE_URL}/logo-email.png`;
+const LOGO_URL = `${SITE_URL}/logo-email.png?v=2`;
 const BRAND_PURPLE = "#7635D5";
 const FONT_STACK =
   "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
@@ -183,7 +194,6 @@ function buildAutoReply(greeting: string) {
     <td style="padding:24px;font-family:${FONT_STACK};font-size:15px;line-height:1.6;color:#2b2733;">
       <p style="margin:0 0 16px;">${hello}</p>
       <p style="margin:0 0 16px;">Merci de m'avoir écrit. J'ai bien reçu votre message et je vous reviens d'ici 24 heures.</p>
-      <p style="margin:0 0 24px;">Si c'est pressant, appelez-moi au <a href="tel:+1${LEGAL.phone}" style="color:${BRAND_PURPLE};text-decoration:none;">${phone}</a>.</p>
       <p style="margin:0 0 20px;">À bientôt,</p>
       <table role="presentation" cellpadding="0" cellspacing="0" border="0">
         <tr>
