@@ -89,7 +89,7 @@ export const ADDONS: Addon[] = [
     num: "01",
     title: "Configuration Meta Ads",
     price: "175 $",
-    image: "meta-ads.webp",
+    image: "/meta-ads.webp",
     alt: "Configuration de publicité Facebook et Instagram",
     pitch:
       "Le référencement naturel prend des mois à porter fruit. Une campagne Meta peut vous amener des visiteurs dès le lendemain du lancement.",
@@ -100,7 +100,7 @@ export const ADDONS: Addon[] = [
     num: "02",
     title: "Carte d'affaires (design)",
     price: "75 $",
-    image: "business-cards.webp",
+    image: "/business-cards.webp",
     alt: "Design de carte d'affaires recto-verso",
     pitch: "Votre identité visuelle, dans leur poche.",
     desc: "Design recto-verso à votre image, livré dans un format professionnel prêt à envoyer directement à l'imprimeur, sans les surprises de rognage ou de qualité qu'un fichier fait maison peut causer.",
@@ -110,7 +110,7 @@ export const ADDONS: Addon[] = [
     num: "03",
     title: "Gabarits réseaux sociaux additionnels",
     price: "100 $",
-    image: "social-media-templates.webp",
+    image: "/social-media-templates.webp",
     alt: "Gabarits supplémentaires pour réseaux sociaux",
     pitch:
       "De quoi publier pendant des mois sans rouvrir un logiciel de design.",
@@ -121,7 +121,7 @@ export const ADDONS: Addon[] = [
     num: "04",
     title: "SEO local avancé",
     price: "150 $",
-    image: "advanced-seo.webp",
+    image: "/advanced-seo.webp",
     alt: "Référencement local avancé",
     pitch:
       'Une recherche Google sur deux est locale : "plombier près de moi", "resto à Québec". Si vous n\'êtes pas configuré pour ça, vous êtes invisible au moment exact où quelqu\'un vous cherche.',
@@ -132,7 +132,7 @@ export const ADDONS: Addon[] = [
     num: "05",
     title: "Infolettre : mise en place",
     price: "100 $",
-    image: "mailchimp.webp",
+    image: "/mailchimp.webp",
     alt: "Configuration d'infolettre courriel",
     pitch:
       "Arrêtez de perdre vos visiteurs une fois qu'ils quittent votre site.",

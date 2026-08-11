@@ -1,0 +1,46 @@
+[
+  {
+    "q": "Est-ce que je vais être « pris » avec vous ?",
+    "a": "Non. Le domaine et la fiche Google sont à votre nom dès le premier jour, et votre contenu vous appartient. Le site est construit et hébergé sur les systèmes d'Evoweb; si un jour vous voulez travailler avec quelqu'un d'autre, je vous transfère l'accès complet et une copie du site dans les 10 jours ouvrables, sans frais, pour repartir ailleurs."
+  },
+  {
+    "q": "Un ami ou un neveu pourrait me faire ça moins cher, pourquoi pas lui ?",
+    "a": "C'est possible, et ça se peut que ce soit un bon choix. La différence se voit surtout dans six mois, s'il devient occupé : ici, il y a un contrat écrit, un échéancier et une facture. Et si un jour vous voulez que quelqu'un d'autre s'en occupe (lui ou n'importe qui), votre domaine et votre fiche Google sont déjà à votre nom, et je vous transfère le reste sans frais, c'est écrit au contrat."
+  },
+  {
+    "q": "Qu'est-ce qui arrive si je n'aime pas le design ?",
+    "a": "L'appel et la maquette sont gratuits et sans engagement. Vous la gardez même si vous n'allez pas plus loin. Une fois le projet lancé, vous validez l'identité visuelle et la maquette de la page d'accueil avant que je construise le reste, puis deux séries de modifications sont incluses."
+  },
+  {
+    "q": "De quoi avez-vous besoin de moi pour commencer ?",
+    "a": "Deux choses, envoyées quand ça vous adonne : vos heures d'ouverture exactes et la liste de vos services en vrac (je m'occupe de la mise en forme). Si vous avez 5 à 10 photos de votre local, prises au téléphone, tant mieux. Sinon, on choisit ensemble des images qui vous représentent bien. Le reste, je le complète avec vos avis Google et votre page Facebook."
+  },
+  {
+    "q": "Y a-t-il des frais cachés ou un abonnement obligatoire ?",
+    "a": "Non. Le seul montant qui revient chaque année est votre nom de domaine (environ 25 $), payé directement au fournisseur. L'hébergement est inclus, sans abonnement. L'entretien mensuel est optionnel : si vous ne le prenez pas, le site continue de fonctionner pareil."
+  },
+  {
+    "q": "Pourquoi c'est moins cher qu'une agence ?",
+    "a": "Je travaille seul, un projet à la fois, sans bureau ni vendeur à payer. Comme petit fournisseur, aucune taxe ne s'ajoute non plus à votre facture. Je suis aussi étudiant en informatique à l'Université Laval : ça explique le prix, pas la rigueur. Même contrat, même échéancier écrit, même sérieux."
+  },
+  {
+    "q": "Le devis a-t-il une date d'expiration ?",
+    "a": "Oui, 7 jours, pas pour vous mettre de pression, mais pour qu'il y ait une date claire plutôt qu'un « on s'en reparle » qui traîne. S'il expire, il peut être réactivé plus tard, souvent au même prix."
+  },
+  {
+    "q": "Combien de temps ça prend ?",
+    "a": "2 semaines pour Essentiel, 3 semaines pour Présence. Pour Sur mesure, ça dépend de ce qu'on construit (paiements, réservations, gestion de produits) : le délai est confirmé avec le devis."
+  },
+  {
+    "q": "Est-ce que je vais pouvoir modifier mon site moi-même après ?",
+    "a": "Pour ce qui revient souvent (vos heures, une photo, un texte), oui : une formation de 30 minutes vous montre exactement comment, et vous repartez avec un guide écrit. Pour le reste, l'entretien mensuel existe justement pour ça."
+  },
+  {
+    "q": "Mon site va-t-il être conforme aux lois du Québec ?",
+    "a": "Oui, sur les trois forfaits. La Loi 25 (renseignements personnels) et la Loi 96 (langue française) s'appliquent dès qu'un site a un formulaire de contact, donc à peu près tout le monde. Politique de confidentialité et site en français sont inclus d'office."
+  },
+  {
+    "q": "Comment je paie, et est-ce sécuritaire ?",
+    "a": "En trois versements liés à ce que vous voyez : 40 % à la signature, 30 % quand vous approuvez le design fini, 30 % avant que le site devienne public. Par virement Interac (aucuns frais) ou par carte via une facture Stripe sécurisée (des frais de 2,9 % + 0,30 $ s'appliquent si vous choisissez cette option). Je ne vois et ne conserve jamais votre numéro de carte."
+  }
+]
