@@ -10,10 +10,19 @@ import nodemailer from "nodemailer";
 //
 // Variables d'environnement requises (Vercel > Project Settings >
 // Environment Variables — jamais commitées, voir .env.example) :
-//   GMAIL_USER          boîte Google Workspace utilisée pour l'envoi (ex. contact@evoweb.ca)
-//   GMAIL_APP_PASSWORD  mot de passe d'application généré pour ce compte
+//   GMAIL_USER          le compte Google RÉEL utilisé pour l'authentification SMTP
+//                        (ex. dereck@evoweb.ca). Un mot de passe d'application
+//                        s'obtient pour un compte, jamais pour un alias : si
+//                        contact@evoweb.ca est un alias de dereck@evoweb.ca,
+//                        GMAIL_USER doit être dereck@evoweb.ca, pas l'alias —
+//                        sinon Gmail rejette l'authentification (535 5.7.8).
+//   GMAIL_APP_PASSWORD  mot de passe d'application généré pour ce même compte
 //                        (nécessite la validation en 2 étapes sur le compte)
-//   CONTACT_TO_EMAIL    optionnel — destinataire des messages, si différent de GMAIL_USER
+//   CONTACT_TO_EMAIL    optionnel — adresse publique affichée en from/to
+//                        (ex. contact@evoweb.ca), si différente de GMAIL_USER.
+//                        Un alias Workspace du compte authentifié est accepté
+//                        par Gmail comme adresse d'expédition sans étape
+//                        supplémentaire.
 
 const MAX_FIELD_LENGTH = 5000;
 
@@ -44,7 +53,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const gmailUser = process.env.GMAIL_USER;
   const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
-  const to = process.env.CONTACT_TO_EMAIL || gmailUser;
+  // Adresse publique (from/to) : l'alias si configuré, sinon le compte
+  // d'authentification lui-même.
+  const publicAddress = process.env.CONTACT_TO_EMAIL || gmailUser;
 
   if (!gmailUser || !gmailAppPassword) {
     console.error("GMAIL_USER / GMAIL_APP_PASSWORD are not set");
@@ -61,8 +72,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // répondre-à pointe vers le visiteur pour pouvoir lui répondre
     // directement depuis Gmail.
     await transporter.sendMail({
-      from: `Evoweb — Formulaire de contact <${gmailUser}>`,
-      to,
+      from: `Evoweb — Formulaire de contact <${publicAddress}>`,
+      to: publicAddress,
       replyTo: email.trim(),
       subject: `Nouveau message de ${name.trim()} via evoweb.ca`,
       text: `Nom : ${name.trim()}\nCourriel : ${email.trim()}\n\n${message.trim()}`,
@@ -77,7 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // message principal est déjà rendu, on ne fait pas échouer la requête
     // pour ne pas laisser croire au visiteur que rien n'est parti.
     await transporter.sendMail({
-      from: `Evoweb <${gmailUser}>`,
+      from: `Evoweb <${publicAddress}>`,
       to: email.trim(),
       subject: "Message bien reçu — Evoweb",
       text: `Bonjour ${name.trim()},\n\nVotre message a bien été reçu, merci pour votre confiance ! Je vous réponds sous 24h.\n\n— Dereck, Evoweb`,
