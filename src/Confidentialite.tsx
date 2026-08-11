@@ -1,16 +1,21 @@
+import type { ReactNode } from "react";
 import { useTheme } from "./ThemeContext";
 import { LEGAL } from "./legal";
 import { tokensFor } from "./tokens";
 import { useSEO } from "./useSEO";
+import ObfuscatedEmail from "./ObfuscatedEmail";
 
-type Section = { title: string; body: string[] };
+type Section = { title: string; body: ReactNode[] };
 
 const SECTIONS: Section[] = [
   {
     title: "Responsable de la protection des renseignements personnels",
     body: [
       `${LEGAL.privacyOfficer}, propriétaire d'Evoweb, agit comme responsable de la protection des renseignements personnels.`,
-      `Vous pouvez le joindre à ${LEGAL.email} pour toute question, ou pour une demande d'accès, de rectification ou de retrait de vos renseignements.`,
+      <>
+        Vous pouvez le joindre à <ObfuscatedEmail /> pour toute question, ou pour une demande
+        d'accès, de rectification ou de retrait de vos renseignements.
+      </>,
     ],
   },
   {
@@ -32,7 +37,7 @@ const SECTIONS: Section[] = [
   {
     title: "À qui ils sont communiqués",
     body: [
-      "Evoweb ne communique aucun renseignement personnel à des tiers, sauf aux fournisseurs nécessaires au fonctionnement du site et de l'entreprise : EmailJS pour la transmission des messages du formulaire, Vercel pour l'hébergement et les statistiques, et Stripe pour le traitement des paiements par carte.",
+      "Evoweb ne communique aucun renseignement personnel à des tiers, sauf aux fournisseurs nécessaires au fonctionnement du site et de l'entreprise : Google Workspace pour la transmission des messages du formulaire, Vercel pour l'hébergement et les statistiques, et Stripe pour le traitement des paiements par carte.",
       "Ces fournisseurs peuvent traiter ou héberger des données à l'extérieur du Québec, notamment aux États-Unis. Ils sont soumis à leurs propres engagements de confidentialité et de sécurité. En communiquant avec Evoweb par le formulaire, vous consentez à ce que votre message transite par ces services.",
     ],
   },
@@ -55,7 +60,10 @@ const SECTIONS: Section[] = [
     title: "Vos droits",
     body: [
       "Vous pouvez en tout temps demander à consulter les renseignements détenus à votre sujet, les faire corriger s'ils sont inexacts, en demander la suppression sous réserve des obligations légales de conservation, ou retirer votre consentement.",
-      `Les demandes sont traitées dans un délai maximal de 30 jours. Écrivez à ${LEGAL.email}.`,
+      <>
+        Les demandes sont traitées dans un délai maximal de 30 jours. Écrivez à{" "}
+        <ObfuscatedEmail />.
+      </>,
       "Vous pouvez également porter plainte auprès de la Commission d'accès à l'information du Québec.",
     ],
   },
@@ -144,7 +152,9 @@ export default function Confidentialite() {
           <p>faisant affaire sous le nom Evoweb</p>
           <p>NEQ {LEGAL.neq}</p>
           <p>{LEGAL.city}</p>
-          <p>{LEGAL.email}</p>
+          <p>
+            <ObfuscatedEmail />
+          </p>
         </div>
       </div>
     </div>

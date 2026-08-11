@@ -1,51 +1,59 @@
 import { useRef, useState } from "react";
-import emailjs from "@emailjs/browser";
 import { ArrowRight } from "lucide-react";
 
 const ContactForm = () => {
   const form = useRef<HTMLFormElement>(null);
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.current) return;
 
-    const serviceId            = import.meta.env.VITE_REACT_APP_EMAILJS_SERVICE_ID;
-    const templateIdForMessage = import.meta.env.VITE_REACT_APP_EMAILJS_TEMPLATE_ID_FOR_MESSAGE;
-    const templateIdForReply   = import.meta.env.VITE_REACT_APP_EMAILJS_TEMPLATE_ID_FOR_REPLY;
-    const publicKey            = import.meta.env.VITE_REACT_APP_EMAILJS_PUBLIC_KEY;
+    const data = new FormData(form.current);
 
-    if (!serviceId || !templateIdForMessage || !templateIdForReply || !publicKey) {
-      setStatus("error");
-      console.error("Environment variables are not defined!");
+    // Piège à robots : ce champ est masqué hors-écran, invisible pour un
+    // visiteur humain, mais les robots qui remplissent tous les champs d'un
+    // formulaire le remplissent aussi. On répond par un faux succès pour ne
+    // pas leur révéler que le piège a fonctionné.
+    if (String(data.get("company") ?? "").trim() !== "") {
+      setStatus("success");
+      form.current.reset();
       return;
     }
 
+    setStatus("sending");
+
     try {
-      await emailjs.sendForm(serviceId, templateIdForMessage, form.current, publicKey);
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          message: data.get("message"),
+        }),
+      });
+      if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
     } catch (error) {
       setStatus("error");
-      console.error("Error sending email:", error);
+      console.error("Error sending message:", error);
       return;
     }
 
-    // Le message principal est parti : ce qui suit (l'accusé de réception au
-    // client) est secondaire. Ne pas afficher d'erreur si seule cette
-    // deuxième requête échoue, pour ne pas faire croire au client que son
-    // message ne s'est pas rendu alors qu'il est déjà dans notre boîte.
-    // sendForm lit le DOM en direct, donc le reset attend que les deux
-    // envois soient tentés.
-    try {
-      await emailjs.sendForm(serviceId, templateIdForReply, form.current, publicKey);
-    } catch (error) {
-      console.error("Error sending auto-reply email:", error);
-    }
     setStatus("success");
     form.current.reset();
   };
 
   return (
     <form ref={form} onSubmit={handleSubmit} className="space-y-4">
+      <input
+        type="text"
+        name="company"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-px w-px opacity-0"
+      />
       {(["text", "email"] as const).map((type) => (
         <input
           key={type}
@@ -71,9 +79,10 @@ const ContactForm = () => {
       />
       <button
         type="submit"
-        className="w-full font-semibold px-8 py-3 text-sm uppercase tracking-wider transition-opacity hover:opacity-85 inline-flex items-center justify-center gap-2 group bg-[#7635D5] text-white"
+        disabled={status === "sending"}
+        className="w-full font-semibold px-8 py-3 text-sm uppercase tracking-wider transition-opacity hover:opacity-85 disabled:opacity-60 inline-flex items-center justify-center gap-2 group bg-[#7635D5] text-white"
       >
-        Envoyer le Message
+        {status === "sending" ? "Envoi en cours..." : "Envoyer le Message"}
         <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </button>
       {status === "success" && (

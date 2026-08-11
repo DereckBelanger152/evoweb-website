@@ -2,6 +2,7 @@ import { Github, Linkedin } from "lucide-react";
 import { useTheme } from "./ThemeContext";
 import { tokensFor, violet } from "./tokens";
 import { LEGAL } from "./legal";
+import ObfuscatedEmail from "./ObfuscatedEmail";
 
 // Pied de page partagé par toutes les pages (accueil, confidentialité,
 // forfaits). Ne pas dupliquer ce JSX ailleurs — importer ce composant, pour
@@ -53,7 +54,7 @@ export default function SiteFooter() {
               Tous droits réservés.
             </p>
             <p className="text-xs" style={{ color: T.mutedOnSunken }}>
-              NEQ {LEGAL.neq} · {LEGAL.city} · {LEGAL.email}
+              NEQ {LEGAL.neq} · {LEGAL.city} · <ObfuscatedEmail />
             </p>
             <a
               href="/confidentialite"
