@@ -28,5 +28,5 @@ This is the official repository for Evoweb's website. In constant development, I
 ## 👤 Contact
 
 For any questions or collaborations, feel free to reach out! 🚀  
-📧 **Email:** [contact@evoweb.ca](mailto:contact@evoweb.ca)  
+📧 **Email:** [via the contact form](https://evoweb.ca/#contact)
 💼 **LinkedIn:** [linkedin.com/in/dereck-bélanger-437259338](https://www.linkedin.com/in/dereck-bélanger-437259338/)

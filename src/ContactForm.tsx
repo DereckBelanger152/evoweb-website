@@ -3,23 +3,15 @@ import { ArrowRight } from "lucide-react";
 
 const ContactForm = () => {
   const form = useRef<HTMLFormElement>(null);
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "sending" | "success" | "error" | "throttled"
+  >("idle");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.current) return;
 
     const data = new FormData(form.current);
-
-    // Piège à robots : ce champ est masqué hors-écran, invisible pour un
-    // visiteur humain, mais les robots qui remplissent tous les champs d'un
-    // formulaire le remplissent aussi. On répond par un faux succès pour ne
-    // pas leur révéler que le piège a fonctionné.
-    if (String(data.get("company") ?? "").trim() !== "") {
-      setStatus("success");
-      form.current.reset();
-      return;
-    }
 
     setStatus("sending");
 
@@ -31,8 +23,17 @@ const ContactForm = () => {
           name: data.get("name"),
           email: data.get("email"),
           message: data.get("message"),
+          // Piège à robots : champ masqué hors-écran qu'un humain ne voit
+          // jamais. Il est transmis tel quel — c'est le serveur qui tranche,
+          // puisqu'un robot peut appeler /api/contact directement et
+          // contourner n'importe quel contrôle fait ici.
+          company: data.get("company"),
         }),
       });
+      if (res.status === 429) {
+        setStatus("throttled");
+        return;
+      }
       if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
     } catch (error) {
       setStatus("error");
@@ -93,6 +94,11 @@ const ContactForm = () => {
       {status === "error" && (
         <p className="text-sm pt-1 text-[#B6202A] dark:text-[#F7A1A6]">
           Une erreur est survenue. Veuillez réessayer.
+        </p>
+      )}
+      {status === "throttled" && (
+        <p className="text-sm pt-1 text-[#B6202A] dark:text-[#F7A1A6]">
+          Trop de tentatives. Patientez une minute avant de réessayer.
         </p>
       )}
       {/* Mention de la finalité de la collecte, exigée par la Loi 25. */}

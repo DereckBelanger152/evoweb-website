@@ -1,33 +1,123 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import nodemailer from "nodemailer";
 
-// Reçoit les soumissions du formulaire de contact et les achemine par
-// Google Workspace (SMTP Gmail), sans passer par un service tiers comme
-// EmailJS. L'adresse de destination ne transite jamais vers le navigateur :
-// elle vit uniquement ici, côté serveur — un moissonneur qui inspecte le
-// site ou son bundle JS ne la trouvera jamais, puisqu'elle n'y est jamais
-// envoyée.
+// Livraison via l'API HTTP de Resend plutôt que par SMTP. Deux raisons :
+//   1. Une fonction serverless dispose d'environ 10 s pour répondre, et une
+//      poignée de main SMTP à froid (connexion, TLS, authentification, envoi,
+//      fermeture — deux fois) en consomme une part imprévisible. Un POST
+//      HTTPS est comparativement immédiat.
+//   2. Un compte Google ne se livre pas de courriel à lui-même : un message
+//      envoyé depuis dereck@evoweb.ca vers contact@evoweb.ca (son propre
+//      alias) n'obtient jamais l'étiquette « Boîte de réception » — il
+//      n'apparaît que dans « Tous les messages », déjà marqué lu, sans
+//      notification. Passer par un expéditeur externe le rend à Gmail comme
+//      un vrai courriel entrant.
 //
-// Variables d'environnement requises (Vercel > Project Settings >
-// Environment Variables — jamais commitées, voir .env.example) :
-//   GMAIL_USER          le compte Google RÉEL utilisé pour l'authentification SMTP
-//                        (ex. dereck@evoweb.ca). Un mot de passe d'application
-//                        s'obtient pour un compte, jamais pour un alias : si
-//                        contact@evoweb.ca est un alias de dereck@evoweb.ca,
-//                        GMAIL_USER doit être dereck@evoweb.ca, pas l'alias —
-//                        sinon Gmail rejette l'authentification (535 5.7.8).
-//   GMAIL_APP_PASSWORD  mot de passe d'application généré pour ce même compte
-//                        (nécessite la validation en 2 étapes sur le compte)
-//   CONTACT_TO_EMAIL    optionnel — adresse publique affichée en from/to
-//                        (ex. contact@evoweb.ca), si différente de GMAIL_USER.
-//                        Un alias Workspace du compte authentifié est accepté
-//                        par Gmail comme adresse d'expédition sans étape
-//                        supplémentaire.
+// Aucune adresse n'est écrite ici : elles vivent en variables
+// d'environnement, donc ni le bundle JS ni le dépôt ne les exposent aux
+// moissonneurs d'adresses.
+//
+// Variables requises (Vercel > Project Settings > Environment Variables) :
+//   RESEND_API_KEY      clé API Resend (resend.com > API Keys)
+//   CONTACT_FROM_EMAIL  adresse publique d'expédition (contact@evoweb.ca).
+//                       Son domaine doit être vérifié dans Resend, sinon
+//                       l'envoi est refusé.
+//   CONTACT_TO_EMAIL    boîte qui reçoit les notifications de leads.
 
-const MAX_FIELD_LENGTH = 5000;
+const LIMITS = { name: 120, email: 200, message: 5000 };
+
+// Fenêtre glissante par IP. Le Map vit dans l'instance de fonction : il ne
+// couvre pas toutes les instances simultanées, mais il coupe les rafales
+// d'un même robot, qui est le cas réel. Un blocage strict exigerait un
+// stockage partagé — disproportionné pour un formulaire de contact.
+// Volontairement permissif : plusieurs visiteurs légitimes peuvent partager
+// une même IP (réseau d'entreprise, opérateur mobile). Perdre un vrai lead
+// coûte plus cher que recevoir un pourriel, et le piège à robots filtre déjà
+// l'essentiel. Le but ici est seulement de couper les rafales.
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX = 5;
+const recentHits = new Map<string, number[]>();
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const hits = (recentHits.get(ip) ?? []).filter((at) => now - at < RATE_WINDOW_MS);
+  hits.push(now);
+  recentHits.set(ip, hits);
+
+  if (recentHits.size > 500) {
+    for (const [key, times] of recentHits) {
+      if (times.every((at) => now - at >= RATE_WINDOW_MS)) recentHits.delete(key);
+    }
+  }
+
+  return hits.length > RATE_MAX;
+}
+
+// `x-forwarded-for` est falsifiable : un robot qui en change la valeur à
+// chaque requête échapperait à la limite. Vercel écrit lui-même
+// `x-vercel-forwarded-for` en amont de la fonction, hors de portée de
+// l'appelant — on s'y fie en premier.
+function clientIp(req: VercelRequest) {
+  const header =
+    req.headers["x-vercel-forwarded-for"] ??
+    req.headers["x-real-ip"] ??
+    req.headers["x-forwarded-for"];
+  const value = Array.isArray(header) ? header[0] : header;
+  return value?.split(",")[0]?.trim() || "inconnue";
+}
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+// Neutralise les sauts de ligne avant l'insertion dans un sujet.
+function oneLine(value: string) {
+  return value.replace(/[\r\n]+/g, " ").trim();
+}
+
+// L'accusé de réception part vers une adresse choisie par l'appelant, signé
+// DKIM au nom du domaine : tout ce qu'on y recopie doit donc être inoffensif.
+// On ne garde que le premier mot du nom, réduit à des caractères de nom.
+// Un lien, un numéro ou une adresse ne peuvent pas survivre à ce filtre, ce
+// qui retire tout intérêt à détourner le formulaire pour faire envoyer un
+// message depuis contact@evoweb.ca. La notification qui nous est destinée
+// garde le nom intact : elle n'est lue que par nous.
+function safeGreetingName(value: string) {
+  const firstWord = value.trim().split(/\s+/)[0] ?? "";
+  return firstWord.replace(/[^\p{L}'-]/gu, "").slice(0, 40);
+}
+
+type Mail = {
+  from: string;
+  to: string;
+  subject: string;
+  text: string;
+  reply_to?: string;
+};
+
+async function send(mail: Mail, apiKey: string) {
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(mail),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Resend a répondu ${response.status} : ${await response.text()}`);
+  }
+}
+
+// Perdre un lead à cause d'un incident réseau ponctuel n'est pas acceptable :
+// on retente une fois avant d'abandonner.
+async function sendWithRetry(mail: Mail, apiKey: string) {
+  try {
+    await send(mail, apiKey);
+  } catch (error) {
+    console.error("Resend : première tentative échouée, nouvel essai —", error);
+    await send(mail, apiKey);
+  }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -36,73 +126,83 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  if (isRateLimited(clientIp(req))) {
+    return res.status(429).json({ error: "Trop de demandes, réessayez dans une minute." });
+  }
+
   const body = (req.body ?? {}) as Record<string, unknown>;
-  const { name, email, message } = body;
+  const { name, email, message, company } = body;
+
+  // Piège à robots. La vérification est ici et non dans le navigateur : le
+  // point d'entrée /api/contact est visible dans le bundle, un robot peut
+  // donc l'appeler directement en contournant tout contrôle client. On
+  // renvoie un faux succès pour ne pas lui indiquer qu'il a été repéré.
+  if (company !== undefined && company !== null && String(company).trim() !== "") {
+    return res.status(200).json({ ok: true });
+  }
 
   if (
-    typeof name !== "string" || !name.trim() ||
-    typeof email !== "string" || !isValidEmail(email.trim()) ||
-    typeof message !== "string" || !message.trim()
+    typeof name !== "string" || !name.trim() || name.length > LIMITS.name ||
+    typeof email !== "string" || !isValidEmail(email.trim()) || email.length > LIMITS.email ||
+    typeof message !== "string" || !message.trim() || message.length > LIMITS.message
   ) {
     return res.status(400).json({ error: "Champs invalides" });
   }
 
-  if (name.length > MAX_FIELD_LENGTH || email.length > MAX_FIELD_LENGTH || message.length > MAX_FIELD_LENGTH) {
-    return res.status(400).json({ error: "Champ trop long" });
-  }
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromAddress = process.env.CONTACT_FROM_EMAIL;
+  const notifyTo = process.env.CONTACT_TO_EMAIL;
 
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
-  // Adresse publique (from/to) : l'alias si configuré, sinon le compte
-  // d'authentification lui-même.
-  const publicAddress = process.env.CONTACT_TO_EMAIL || gmailUser;
-
-  if (!gmailUser || !gmailAppPassword) {
-    console.error("GMAIL_USER / GMAIL_APP_PASSWORD are not set");
+  if (!apiKey || !fromAddress || !notifyTo) {
+    console.error("RESEND_API_KEY / CONTACT_FROM_EMAIL / CONTACT_TO_EMAIL manquants");
     return res.status(500).json({ error: "Configuration serveur manquante" });
   }
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: { user: gmailUser, pass: gmailAppPassword },
+  const leadName = oneLine(name);
+  const leadEmail = email.trim();
+
+  // Gmail regroupe en une seule conversation les messages au sujet
+  // identique : l'horodatage garde chaque demande distincte et visible.
+  const receivedAt = new Date().toLocaleString("fr-CA", {
+    timeZone: "America/Toronto",
+    dateStyle: "short",
+    timeStyle: "short",
   });
 
   try {
-    // Message principal, reçu dans la boîte de l'entreprise. Le
-    // répondre-à pointe vers le visiteur pour pouvoir lui répondre
-    // directement depuis Gmail.
-    // L'heure dans le sujet garantit un sujet unique par soumission : Gmail
-    // regroupe les messages par sujet identique en une seule conversation,
-    // ce qui mélangerait plusieurs demandes distinctes de la même personne.
-    const receivedAt = new Date().toLocaleString("fr-CA", {
-      timeZone: "America/Toronto",
-      dateStyle: "short",
-      timeStyle: "medium",
-    });
-    await transporter.sendMail({
-      from: `Evoweb — Formulaire de contact <${publicAddress}>`,
-      to: publicAddress,
-      replyTo: email.trim(),
-      subject: `Nouveau message de ${name.trim()} via evoweb.ca (${receivedAt})`,
-      text: `Nom : ${name.trim()}\nCourriel : ${email.trim()}\n\n${message.trim()}`,
-    });
+    await sendWithRetry(
+      {
+        from: `Formulaire Evoweb <${fromAddress}>`,
+        to: notifyTo,
+        reply_to: leadEmail,
+        subject: `Nouveau lead — ${leadName} (${receivedAt})`,
+        text: `Nom : ${leadName}\nCourriel : ${leadEmail}\n\n${message.trim()}`,
+      },
+      apiKey,
+    );
   } catch (error) {
-    console.error("Error sending contact notification:", error);
+    console.error("Échec de la notification de lead :", error);
     return res.status(502).json({ error: "Envoi impossible" });
   }
 
+  // L'accusé de réception est secondaire : la notification est déjà partie,
+  // on ne fait pas échouer la requête et on ne laisse pas le visiteur croire
+  // que son message s'est perdu.
+  const greeting = safeGreetingName(leadName);
+
   try {
-    // Accusé de réception au visiteur. Un échec ici est secondaire : le
-    // message principal est déjà rendu, on ne fait pas échouer la requête
-    // pour ne pas laisser croire au visiteur que rien n'est parti.
-    await transporter.sendMail({
-      from: `Evoweb <${publicAddress}>`,
-      to: email.trim(),
-      subject: "Message bien reçu — Evoweb",
-      text: `Bonjour ${name.trim()},\n\nVotre message a bien été reçu, merci pour votre confiance ! Je vous réponds sous 24h.\n\n— Dereck, Evoweb`,
-    });
+    await send(
+      {
+        from: `Evoweb <${fromAddress}>`,
+        to: leadEmail,
+        reply_to: fromAddress,
+        subject: "Message bien reçu — Evoweb",
+        text: `Bonjour${greeting ? ` ${greeting}` : ""},\n\nVotre message a bien été reçu, merci pour votre confiance ! Je vous réponds sous 24h.\n\n— Dereck, Evoweb`,
+      },
+      apiKey,
+    );
   } catch (error) {
-    console.error("Error sending contact auto-reply:", error);
+    console.error("Échec de l'accusé de réception :", error);
   }
 
   return res.status(200).json({ ok: true });
