@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { track } from "@vercel/analytics";
+import { reportLeadConversion } from "./gtag";
 
 // Chaque champ porte une vraie <label> reliée par htmlFor/id. Un placeholder
 // n'en tient pas lieu : il disparaît dès la première frappe, et un lecteur
@@ -111,6 +112,10 @@ export default function ContactForm() {
 
     setStatus("success");
     track("contact_form_submit");
+    // Après le `return` de la branche d'erreur : seul un message réellement
+    // acheminé compte comme conversion. Un envoi refusé pour cause de limite
+    // de débit ou d'erreur serveur n'en est pas une.
+    reportLeadConversion();
     form.current.reset();
   };
 
