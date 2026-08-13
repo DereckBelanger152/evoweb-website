@@ -24,20 +24,22 @@ const SECTIONS: Section[] = [
       "Par le formulaire de contact : votre nom, votre adresse courriel et le contenu de votre message. Ces renseignements sont fournis volontairement par vous.",
       "Dans le cadre d'un mandat : les renseignements nécessaires à l'exécution du contrat et à la facturation, soit le nom de l'entreprise, ses coordonnées et le nom de la personne responsable.",
       "Statistiques de visite : ce site utilise Vercel Analytics, un outil de mesure d'achalandage qui ne dépose aucun témoin et ne permet pas de vous identifier personnellement. Les données recueillies sont agrégées.",
-      "Ce site n'utilise aucun témoin publicitaire et ne fait aucun suivi publicitaire. Les polices de caractères sont servies par ce site lui-même : aucune requête n'est adressée à un tiers pendant que vous naviguez.",
+      "Mesure des annonces : ce site utilise la balise Google Ads (gtag.js) afin de savoir quelles annonces mènent à une demande de soumission. Cet outil dépose des témoins et transmet à Google votre adresse IP, l'adresse des pages visitées et un identifiant de navigateur. La balise se charge à chaque visite, quelle que soit la façon dont vous êtes arrivé sur le site.",
+      "Vous pouvez refuser ce suivi en bloquant les témoins tiers dans votre navigateur, en installant le module de désactivation offert par Google, ou en désactivant la personnalisation des annonces dans les paramètres de votre compte Google. Le site fonctionne normalement sans ces témoins.",
+      "Aucun autre suivi publicitaire n'est fait. Les polices de caractères sont servies par ce site lui-même : hors de la balise Google Ads, aucune requête n'est adressée à un tiers pendant que vous naviguez.",
     ],
   },
   {
     title: "Pourquoi ils sont recueillis",
     body: [
-      "Pour répondre à votre demande, préparer une soumission, exécuter un mandat, produire la facturation et tenir les livres comptables, et comprendre l'achalandage du site afin de l'améliorer.",
+      "Pour répondre à votre demande, préparer une soumission, exécuter un mandat, produire la facturation et tenir les livres comptables, comprendre l'achalandage du site afin de l'améliorer, et mesurer le rendement des annonces payées.",
       "Vos renseignements ne sont utilisés à aucune autre fin. Ils ne sont jamais vendus, loués ni échangés.",
     ],
   },
   {
     title: "À qui ils sont communiqués",
     body: [
-      "Evoweb ne communique aucun renseignement personnel à des tiers, sauf aux fournisseurs nécessaires au fonctionnement du site et de l'entreprise : Resend pour l'acheminement des messages du formulaire, Google Workspace pour la boîte courriel qui les reçoit, Vercel pour l'hébergement et les statistiques, et Stripe pour le traitement des paiements par carte.",
+      "Evoweb ne communique aucun renseignement personnel à des tiers, sauf aux fournisseurs nécessaires au fonctionnement du site et de l'entreprise : Resend pour l'acheminement des messages du formulaire, Google Workspace pour la boîte courriel qui les reçoit, Vercel pour l'hébergement et les statistiques, Google Ads pour la mesure des annonces, et Stripe pour le traitement des paiements par carte.",
       "Ces fournisseurs peuvent traiter ou héberger des données à l'extérieur du Québec, notamment aux États-Unis. Ils sont soumis à leurs propres engagements de confidentialité et de sécurité. En communiquant avec Evoweb par le formulaire, vous consentez à ce que votre message transite par ces services.",
     ],
   },
@@ -47,6 +49,7 @@ const SECTIONS: Section[] = [
       "Les demandes sans suite sont conservées 12 mois, puis supprimées.",
       "Les dossiers de clients sont conservés 7 ans après la fin du mandat, tel que l'exigent les obligations fiscales.",
       "Les statistiques de visite sont agrégées et ne font l'objet d'aucune conservation individuelle.",
+      "Les témoins déposés par la balise Google Ads expirent d'eux-mêmes selon les délais fixés par Google, soit 90 jours pour le témoin de mesure des conversions.",
     ],
   },
   {
