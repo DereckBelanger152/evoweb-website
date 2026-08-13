@@ -16,5 +16,5 @@ export const LEGAL = {
   phone: "5813086181",
   // Personne responsable de la protection des renseignements personnels (Loi 25).
   privacyOfficer: "Dereck Bélanger",
-  privacyUpdatedAt: "11 août 2026",
+  privacyUpdatedAt: "12 août 2026",
 } as const;

@@ -72,6 +72,23 @@
          des deux polices critiques sont insérés au build par
          scripts/build-html.mjs, qui seul connaît leur nom de fichier haché. -->
 
+    <!-- Google Ads (gtag.js) — suivi des conversions du compte AW-18386837113.
+         `async` : le script est chargé depuis googletagmanager.com et ne doit
+         pas retarder le premier rendu.
+         ATTENTION : comme le script antiscintillement ci-dessus, l'empreinte
+         SHA-256 du bloc en ligne est inscrite dans script-src (vercel.json),
+         et le domaine googletagmanager.com y est autorisé explicitement. Le
+         moindre caractère modifié ici fait échouer `npm run build`, qui
+         affiche alors la nouvelle empreinte à recopier. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18386837113"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-18386837113');
+    </script>
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
